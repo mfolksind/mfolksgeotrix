@@ -1,0 +1,177 @@
+---
+// Import the necessary dependencies.
+import AuthBtn from "@components/ui/buttons/AuthBtn.astro";
+import ContactIconBlock from "@components/ui/blocks/ContactIconBlock.astro";
+import TextInput from "@components/ui/forms/input/TextInput.astro";
+import EmailContactInput from "@components/ui/forms/input/EmailContactInput.astro";
+import PhoneInput from "@components/ui/forms/input/PhoneInput.astro";
+import TextAreaInput from "@components/ui/forms/input/TextAreaInput.astro";
+import SelectInput from "@components/ui/forms/input/SelectInput.astro";
+import Icon from "@components/ui/icons/Icon.astro";
+
+// Define the variables that will be used in this component
+const title: string = "Contact us";
+const subTitle: string =
+  "Have questions or want to discuss a project? Reach out, and let's craft the perfect protection solution with our experts.";
+const formTitle: string = "Submit an Enquiry";
+const formSubTitle: string = "Our technical specialists will get back to you within 24 hours.";
+---
+
+<!-- Contact Us -->
+<section class="relative mx-auto max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14">
+  <div class="mx-auto max-w-2xl lg:max-w-5xl">
+    <div class="text-center">
+      <h1
+        class="text-balance text-2xl font-bold tracking-tight text-neutral-800 dark:text-neutral-200 md:text-4xl md:leading-tight"
+      >
+        {title}
+      </h1>
+      <p class="mt-1 text-pretty text-neutral-600 dark:text-neutral-400">
+        {subTitle}
+      </p>
+    </div>
+
+    <div class="mt-12 grid items-center gap-6 lg:grid-cols-2 lg:gap-16">
+      <div class="flex flex-col rounded-xl p-4 sm:p-6 lg:p-8 border border-neutral-200 dark:border-neutral-700 shadow-sm">
+        <h2
+          class="mb-8 text-xl font-bold text-neutral-700 dark:text-neutral-300"
+        >
+          {formTitle}
+        </h2>
+        <!-- Form for user input with various input fields.-->
+        <form id="contact-enquiry-form">
+          <div class="grid gap-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <TextInput
+                id="contact-name"
+                label="Full Name"
+                name="name"
+              />
+              <TextInput
+                id="contact-company"
+                label="Company"
+                name="company"
+              />
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <EmailContactInput id="contact-email" />
+              <PhoneInput id="contact-phone" />
+            </div>
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <SelectInput
+                id="contact-product"
+                label="Product Required"
+                name="product"
+                options={[
+                  { value: "earthing-rods", label: "Earthing Rods (Chemical/Copper)" },
+                  { value: "lightning-arrestors", label: "Lightning Arrestors (ESE/Conventional)" },
+                  { value: "earthing-strips", label: "Earthing Strips & Flats" },
+                  { value: "bfc-compound", label: "BFC / Backfill Compound" },
+                  { value: "maintenance-audit", label: "Maintenance & Audits" },
+                  { value: "other-custom", label: "Other / Custom Solution" },
+                ]}
+              />
+              <TextInput
+                id="contact-quantity"
+                label="Quantity"
+                name="quantity"
+              />
+            </div>
+            <TextAreaInput
+              id="contact-message"
+              label="Message / Project Details"
+              name="message"
+            />
+          </div>
+
+          <div class="mt-4 grid">
+            <AuthBtn title="Send Enquiry" />
+          </div>
+
+          <div class="mt-3 text-center">
+             <div id="form-status" class="hidden text-sm font-bold mb-2"></div>
+            <p class="text-sm text-neutral-600 dark:text-neutral-400">
+              {formSubTitle}
+            </p>
+          </div>
+        </form>
+      </div>
+
+      <!--ContactIconBlocks are used to display different methods of contacting.-->
+      <div class="divide-y divide-neutral-300 dark:divide-neutral-700">
+        <ContactIconBlock
+          heading="Corporate Office"
+          content="MFOLKS Geotrix Private Limited"
+          isAddressVisible={true}
+          addressContent="10134, Model Basti Industrial Area, East Park Road, Delhi, India - 110005"
+          ><Icon name="mapPin" />
+        </ContactIconBlock>
+
+        <ContactIconBlock
+          heading="Manufacturing Unit"
+          content="Plant-I (Copper Bonding)"
+          isAddressVisible={true}
+          addressContent="Shed No. 12-B, Industrial Hub, Bhiwadi, Rajasthan - 301019"
+          ><Icon name="building" />
+        </ContactIconBlock>
+
+        <ContactIconBlock
+          heading="Call or WhatsApp"
+          content="Instant technical support for your queries."
+          isLinkVisible={true}
+          linkTitle="+91 9711826427"
+          linkURL="https://wa.me/919711826427"
+          isArrowVisible={true}
+          ><Icon name="chatBubble" />
+        </ContactIconBlock>
+
+        <ContactIconBlock
+          heading="Email Support"
+          content="For bulk technical quotations and tenders."
+          isLinkVisible={true}
+          linkTitle="info@mfolks.com"
+          linkURL="mailto:info@mfolks.com"
+          ><Icon name="envelopeOpen" />
+        </ContactIconBlock>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const form = document.getElementById('contact-enquiry-form') as HTMLFormElement;
+  const status = document.getElementById('form-status');
+
+  form?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (!status) return;
+
+    status.classList.remove('hidden', 'text-green-600', 'text-red-600');
+    status.classList.add('text-neutral-500');
+    status.innerText = 'Sending enquiry...';
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+
+    try {
+      const response = await fetch('/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      if (response.ok) {
+        status.innerText = 'Success! Your enquiry has been logged.';
+        status.classList.replace('text-neutral-500', 'text-green-600');
+        form.reset();
+      } else {
+        throw new Error('Submission failed');
+      }
+    } catch (err) {
+      status.innerText = 'Error sending enquiry. Please try again or call us.';
+      status.classList.replace('text-neutral-500', 'text-red-600');
+    }
+  });
+</script>

@@ -1,0 +1,24 @@
+---
+import Icon from "@components/ui/icons/Icon.astro";
+---
+
+<div class="relative" data-lenis-prevent>
+  <div class="pointer-events-none absolute inset-y-0 start-0 flex items-center ps-3">
+    <Icon name="search" class="h-4 w-4 text-neutral-400" />
+  </div>
+  <form action="/products" method="GET">
+    <input
+      type="search"
+      name="q"
+      id="product-search"
+      class="block w-full rounded-full border border-neutral-300 bg-neutral-50 py-2 ps-10 pe-4 text-sm text-neutral-800 outline-none focus:border-orange-400 focus:ring-orange-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200 dark:focus:border-orange-300"
+      placeholder="Search products..."
+    />
+  </form>
+</div>
+
+<style>
+  input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+  }
+</style>
