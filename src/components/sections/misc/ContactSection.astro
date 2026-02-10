@@ -85,8 +85,15 @@ const formSubTitle: string = "Our technical specialists will get back to you wit
           </div>
 
           <div class="mt-4 grid">
+          <div class="mt-4 grid">
             <!-- Google reCAPTCHA v2 Widget -->
-            <div class="g-recaptcha mb-4" data-sitekey={import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY}></div>
+            {import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY ? (
+               <div class="g-recaptcha mb-4" data-sitekey={import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY}></div>
+            ) : (
+               <div class="p-4 mb-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-gray-800 dark:text-red-400" role="alert">
+                  <span class="font-medium">Configuration Warning!</span> reCAPTCHA site key is missing. Form will not work.
+               </div>
+            )}
             <AuthBtn title="Send Enquiry" />
           </div>
 
@@ -144,14 +151,23 @@ const formSubTitle: string = "Our technical specialists will get back to you wit
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 <script is:inline define:vars={{ 
-  WEB_APP_URL: import.meta.env.PUBLIC_GSCRIPT_APP_URL, 
-  API_KEY: import.meta.env.PUBLIC_GSCRIPT_API_KEY
+  WEB_APP_URL: import.meta.env.PUBLIC_GSCRIPT_APP_URL || "", 
+  API_KEY: import.meta.env.PUBLIC_GSCRIPT_API_KEY || ""
 }}>
   const form = document.getElementById('contact-enquiry-form');
   const statusEl = document.getElementById('form-status');
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
+    if (!statusEl) return;
+
+    if (!WEB_APP_URL || !API_KEY) {
+      statusEl.innerText = 'Configuration Error: Missing API configuration.';
+      statusEl.classList.remove('hidden');
+      statusEl.classList.add('text-red-600');
+      console.error('Missing PUBLIC_GSCRIPT_APP_URL or PUBLIC_GSCRIPT_API_KEY');
+      return;
+    }
     if (!statusEl) return;
 
     // Reset status
@@ -161,10 +177,19 @@ const formSubTitle: string = "Our technical specialists will get back to you wit
     statusEl.classList.remove('hidden');
 
     // 1. Verify reCAPTCHA
-    const captchaResponse = grecaptcha.getResponse();
+    let captchaResponse = null;
+    if (typeof grecaptcha !== 'undefined') {
+       try {
+         captchaResponse = grecaptcha.getResponse();
+       } catch (err) {
+         console.warn('reCAPTCHA not ready or not configured');
+       }
+    }
+
     if (!captchaResponse) {
-      statusEl.innerText = 'Please complete the reCAPTCHA verification.';
+      statusEl.innerText = 'Please complete the reCAPTCHA verification. (If invisible, config is missing)';
       statusEl.classList.replace('text-neutral-500', 'text-red-600');
+      statusEl.classList.remove('hidden');
       return;
     }
 
