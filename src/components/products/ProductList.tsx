@@ -24,27 +24,27 @@ interface Category {
   slug: string;
 }
 
-export default function ProductList({ 
-  initialProducts, 
-  categories 
-}: { 
-  initialProducts: Product[]; 
-  categories: Category[]; 
+export default function ProductList({
+  initialProducts,
+  categories
+}: {
+  initialProducts: Product[];
+  categories: Category[];
 }) {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
 
   const filteredProducts = useMemo(() => initialProducts.filter((product) => {
-    const matchesCategory = 
-      selectedCategory === 'all' || 
+    const matchesCategory =
+      selectedCategory === 'all' ||
       product.productCategories.nodes.some((cat) => cat.slug === selectedCategory);
-    
-    const matchesSearch = 
+
+    const matchesSearch =
       product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.productData?.shortDescription?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      product.productData?.shortDescription?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       '';
-    
+
     return matchesCategory && matchesSearch;
   }), [initialProducts, selectedCategory, searchQuery]);
 
@@ -52,11 +52,11 @@ export default function ProductList({
     <div className="flex flex-col lg:flex-row gap-8 items-start">
       {/* Mobile Filter Toggle */}
       <div className="lg:hidden w-full sticky top-24 z-30">
-        <button 
+        <button
           onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
           className="w-full flex items-center justify-between bg-white dark:bg-neutral-800 p-4 rounded-xl shadow-sm border border-neutral-200 dark:border-neutral-700 text-neutral-800 dark:text-neutral-200 font-bold"
         >
-          <span className="flex items-center gap-2"><SlidersHorizontal size={20} className="text-orange-400"/> Filter Products</span>
+          <span className="flex items-center gap-2"><SlidersHorizontal size={20} className="text-orange-400" /> Filter Products</span>
           <ChevronRight className={`transition-transform duration-300 ${isMobileFiltersOpen ? 'rotate-90' : ''}`} />
         </button>
       </div>
@@ -67,93 +67,90 @@ export default function ProductList({
         ${isMobileFiltersOpen ? 'block' : 'hidden'} 
         w-full transition-all duration-300 ease-in-out flex-shrink-0
       `}>
-         <div className="bg-white dark:bg-neutral-800 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-8">
-            {/* Search */}
-            <div className="space-y-3">
-              <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 text-sm uppercase tracking-wide">
-                <Search size={16} className="text-orange-400" /> Search
-              </h3>
-              <div className="relative group">
-                <input
-                  type="text"
-                  placeholder="Type to search..."
-                  className="w-full pl-4 pr-10 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 focus:bg-white dark:focus:bg-neutral-900 focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400 transition-all outline-none text-neutral-800 dark:text-neutral-200 placeholder-neutral-400 text-sm"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                {searchQuery && (
-                  <button 
-                    onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-red-500 transition-colors"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
+        <div className="bg-white dark:bg-neutral-800 p-6 rounded-2xl border border-neutral-200 dark:border-neutral-700 space-y-8">
+          {/* Search */}
+          <div className="space-y-3">
+            <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 text-sm uppercase tracking-wide">
+              <Search size={16} className="text-orange-400" /> Search
+            </h3>
+            <div className="relative group">
+              <input
+                type="text"
+                placeholder="Type to search..."
+                className="w-full pl-4 pr-10 py-2.5 rounded-lg border border-neutral-200 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900 focus:bg-white dark:focus:bg-neutral-900 focus:ring-2 focus:ring-orange-400/50 focus:border-orange-400 transition-all outline-none text-neutral-800 dark:text-neutral-200 placeholder-neutral-400 text-sm"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => setSearchQuery('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-red-500 transition-colors"
+                >
+                  <X size={16} />
+                </button>
+              )}
             </div>
-            
-            <div className="h-px bg-neutral-200 dark:bg-neutral-700" />
+          </div>
 
-            {/* Categories */}
-            <div className="space-y-4">
-               <div className="flex items-center justify-between">
-                 <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 text-sm uppercase tracking-wide">
-                   <Filter size={16} className="text-orange-400" /> Categories
-                 </h3>
-                 {selectedCategory !== 'all' && (
-                   <button onClick={() => setSelectedCategory('all')} className="text-xs text-orange-500 font-medium hover:text-orange-600 transition-colors">
-                     Clear
-                   </button>
-                 )}
-               </div>
-               
-               <div className="space-y-1 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
-                 <button
-                    onClick={() => setSelectedCategory('all')}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${
-                      selectedCategory === 'all'
-                        ? 'bg-orange-50 dark:bg-orange-400/10 text-orange-600 dark:text-orange-400'
-                        : 'hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
-                    }`}
-                 >
-                    <span className="font-medium text-sm">All Products</span>
-                    {selectedCategory === 'all' && <ChevronRight size={16} />}
-                 </button>
-                 {categories.map(cat => (
-                   <button
-                    key={cat.slug}
-                    onClick={() => setSelectedCategory(cat.slug)}
-                    className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${
-                      selectedCategory === cat.slug
-                        ? 'bg-orange-50 dark:bg-orange-400/10 text-orange-600 dark:text-orange-400'
-                        : 'hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
-                    }`}
-                 >
-                    <span className="font-medium text-sm">{cat.name}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full transition-colors ${
-                      selectedCategory === cat.slug 
-                        ? 'bg-white/50 text-orange-600' 
-                        : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'
-                    }`}>
-                      {initialProducts.filter(p => p.productCategories?.nodes?.some(c => c.slug === cat.slug)).length}
-                    </span>
-                 </button>
-                 ))}
-               </div>
+          <div className="h-px bg-neutral-200 dark:bg-neutral-700" />
+
+          {/* Categories */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 text-sm uppercase tracking-wide">
+                <Filter size={16} className="text-orange-400" /> Categories
+              </h3>
+              {selectedCategory !== 'all' && (
+                <button onClick={() => setSelectedCategory('all')} className="text-xs text-orange-500 font-medium hover:text-orange-600 transition-colors">
+                  Clear
+                </button>
+              )}
             </div>
-         </div>
+
+            <div className="space-y-1 max-h-[60vh] overflow-y-auto pr-2 scrollbar-hide">
+              <button
+                onClick={() => setSelectedCategory('all')}
+                className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === 'all'
+                    ? 'bg-orange-50 dark:bg-orange-400/10 text-orange-600 dark:text-orange-400'
+                    : 'hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
+                  }`}
+              >
+                <span className="font-medium text-sm">All Products</span>
+                {selectedCategory === 'all' && <ChevronRight size={16} />}
+              </button>
+              {categories.map(cat => (
+                <button
+                  key={cat.slug}
+                  onClick={() => setSelectedCategory(cat.slug)}
+                  className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === cat.slug
+                      ? 'bg-orange-50 dark:bg-orange-400/10 text-orange-600 dark:text-orange-400'
+                      : 'hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
+                    }`}
+                >
+                  <span className="font-medium text-sm">{cat.name}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full transition-colors ${selectedCategory === cat.slug
+                      ? 'bg-white/50 text-orange-600'
+                      : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'
+                    }`}>
+                    {initialProducts.filter(p => p.productCategories?.nodes?.some(c => c.slug === cat.slug)).length}
+                  </span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </aside>
-      
+
       {/* Product Grid */}
       <div className="flex-1 min-w-0">
-         <div className="mb-6 flex items-center justify-between">
-            <h2 className="font-bold text-neutral-800 dark:text-neutral-200 text-xl">
-              Showing {filteredProducts.length} Result{filteredProducts.length !== 1 ? 's' : ''}
-            </h2>
-         </div>
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="font-bold text-neutral-800 dark:text-neutral-200 text-xl">
+            Showing {filteredProducts.length} Result{filteredProducts.length !== 1 ? 's' : ''}
+          </h2>
+        </div>
 
-         {filteredProducts.length > 0 ? (
-           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+        {filteredProducts.length > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {filteredProducts.map((product, index) => {
               // Logic to alternate card sizes if possible, or just keep uniform for filter view
               // Original logic: index % 4 === 0 || index % 4 === 3 -> Small
@@ -161,14 +158,14 @@ export default function ProductList({
               // However, in a filtered list, widespread grid items might break layout if not careful.
               // Let's stick to the Small Card design for consistency in the filtered view, 
               // BUT use the EXACT styling classes from ProductCardSmall.astro
-              
+
               const categoryName = product.productCategories?.nodes?.[0]?.name || 'Product';
               const imageUrl = product.featuredImage?.node?.sourceUrl || '/placeholder-product.jpg';
 
               return (
-                <a 
-                  key={product.slug} 
-                  href={`/products/${product.slug}`}
+                <a
+                  key={product.slug}
+                  href={`/${product.slug}`}
                   className="group relative block overflow-hidden rounded-xl border border-neutral-200 transition-all duration-300 hover:border-orange-400 hover:shadow-xl dark:border-neutral-700 dark:hover:border-orange-300 bg-white dark:bg-neutral-900"
                 >
                   <div className="aspect-square overflow-hidden bg-neutral-100 dark:bg-neutral-800">
@@ -209,24 +206,24 @@ export default function ProductList({
                 </a>
               );
             })}
-           </div>
-         ) : (
-           <div className="text-center py-20 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl border border-neutral-200 dark:border-neutral-700 flex flex-col items-center justify-center">
-             <div className="w-16 h-16 bg-neutral-200 dark:bg-neutral-700 rounded-full flex items-center justify-center mb-4 text-neutral-400">
-                <PackageX size={32} />
-             </div>
-             <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">No Products Found</h3>
-             <p className="text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto mb-6 text-sm">
-               We couldn't find any products matching "{searchQuery}" in the selected category.
-             </p>
-             <button 
-               onClick={() => {setSelectedCategory('all'); setSearchQuery('')}}
-               className="px-6 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium text-sm hover:opacity-90 transition-opacity"
-             >
-               Clear Filters & View All
-             </button>
-           </div>
-         )}
+          </div>
+        ) : (
+          <div className="text-center py-20 bg-neutral-50 dark:bg-neutral-800/50 rounded-2xl border border-neutral-200 dark:border-neutral-700 flex flex-col items-center justify-center">
+            <div className="w-16 h-16 bg-neutral-200 dark:bg-neutral-700 rounded-full flex items-center justify-center mb-4 text-neutral-400">
+              <PackageX size={32} />
+            </div>
+            <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">No Products Found</h3>
+            <p className="text-neutral-500 dark:text-neutral-400 max-w-sm mx-auto mb-6 text-sm">
+              We couldn't find any products matching "{searchQuery}" in the selected category.
+            </p>
+            <button
+              onClick={() => { setSelectedCategory('all'); setSearchQuery('') }}
+              className="px-6 py-2 rounded-lg bg-neutral-900 dark:bg-neutral-100 text-white dark:text-neutral-900 font-medium text-sm hover:opacity-90 transition-opacity"
+            >
+              Clear Filters & View All
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

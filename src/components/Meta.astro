@@ -20,6 +20,7 @@ const {
   structuredData = defaultProps.structuredData,
   customDescription = defaultProps.customDescription,
   customOgTitle = defaultProps.customOgTitle,
+  socialImage: customSocialImage = null,
 } = Astro.props;
 
 // Use custom description if provided, otherwise use default meta
@@ -36,12 +37,16 @@ const canonical = new URL(
   Astro.site || Astro.url.origin
 ).href;
 const basePath = Astro.url.pathname;
-const socialImageRes = await getImage({
-  src: OG.image,
-  width: 1200,
-  height: 600,
-});
-const socialImage = Astro.url.origin + socialImageRes.src; // Get the full URL of the image (https://stackoverflow.com/a/9858694)
+
+let socialImage = customSocialImage;
+if (!socialImage) {
+  const socialImageRes = await getImage({
+    src: OG.image,
+    width: 1200,
+    height: 600,
+  });
+  socialImage = Astro.url.origin + socialImageRes.src;
+}
 
 const languages: { [key: string]: string } = {
   en: "",
@@ -115,6 +120,7 @@ const alternateLanguageLinks: string = Object.entries(languages)
 
 {/* Links to the webmanifest and sitemap */}
 {/* https://docs.astro.build/en/guides/integrations-guide/sitemap/ */}
+<link rel="icon" href="/siteicon.ico" sizes="any" />
 <link rel="sitemap" href="/sitemap-index.xml" />
 
 {/* Set theme color */}

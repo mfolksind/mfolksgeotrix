@@ -52,10 +52,11 @@ const tabs = [
   title={pageTitle}
   customDescription={metaDescription}
   customOgTitle={ogTitle}
+  structuredImage={product.featuredImage?.node?.sourceUrl}
   structuredData={{
     "@context": "https://schema.org",
     "@type": "Product",
-    "@id": `${SITE.url}/products/${product.slug}`,
+    "@id": `${SITE.url}/${product.slug}`,
     name: product.title,
     description: metaDescription,
     brand: {
