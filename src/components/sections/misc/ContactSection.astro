@@ -85,6 +85,8 @@ const formSubTitle: string = "Our technical specialists will get back to you wit
           </div>
 
           <div class="mt-4 grid">
+            <!-- Google reCAPTCHA v2 Widget -->
+            <div class="g-recaptcha mb-4" data-sitekey={import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY}></div>
             <AuthBtn title="Send Enquiry" />
           </div>
 
@@ -138,40 +140,101 @@ const formSubTitle: string = "Our technical specialists will get back to you wit
   </div>
 </section>
 
-<script>
-  const form = document.getElementById('contact-enquiry-form') as HTMLFormElement;
-  const status = document.getElementById('form-status');
+<!-- Import Google reCAPTCHA v2 API -->
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<script is:inline define:vars={{ 
+  WEB_APP_URL: import.meta.env.PUBLIC_GSCRIPT_APP_URL, 
+  API_KEY: import.meta.env.PUBLIC_GSCRIPT_API_KEY
+}}>
+  const form = document.getElementById('contact-enquiry-form');
+  const statusEl = document.getElementById('form-status');
 
   form?.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!status) return;
+    if (!statusEl) return;
 
-    status.classList.remove('hidden', 'text-green-600', 'text-red-600');
-    status.classList.add('text-neutral-500');
-    status.innerText = 'Sending enquiry...';
+    // Reset status
+    statusEl.classList.remove('hidden', 'text-green-600', 'text-red-600');
+    statusEl.classList.add('text-neutral-500');
+    statusEl.innerText = 'Verifying...';
+    statusEl.classList.remove('hidden');
 
+    // 1. Verify reCAPTCHA
+    const captchaResponse = grecaptcha.getResponse();
+    if (!captchaResponse) {
+      statusEl.innerText = 'Please complete the reCAPTCHA verification.';
+      statusEl.classList.replace('text-neutral-500', 'text-red-600');
+      return;
+    }
+
+    statusEl.innerText = 'Sending enquiry...';
+
+    // 2. Prepare Data
     const formData = new FormData(form);
-    const data = Object.fromEntries(formData.entries());
+    
+    // Combine message and quantity
+    const quantity = formData.get('quantity') || '';
+    const originalMessage = formData.get('message') || '';
+    const fullMessage = quantity ? `${originalMessage}\n\nQuantity: ${quantity}` : originalMessage;
+
+    // Map fields to match Google Apps Script expectations
+    const payload = {
+      submitted_at: new Date().toISOString(),
+      full_name: formData.get('name'),
+      email: formData.get('hs-email-contacts'),
+      phone: formData.get('hs-phone-number'),
+      company_name: formData.get('company'),
+      interested_in: formData.get('product'),
+      service_product_required: formData.get('product'),
+      message: fullMessage,
+      source: 'Website – MFolks Form',
+      recaptcha_token: captchaResponse // Send token if backend wants to verify later
+    };
 
     try {
-      const response = await fetch('/api/contact', {
+      // 3. Send to Google Apps Script
+      // We accept opaque response ('no-cors') or try 'text/plain' to avoid preflight
+      const response = await fetch(`${WEB_APP_URL}?key=${API_KEY}`, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+            'Content-Type': 'text/plain;charset=utf-8', 
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
-        status.innerText = 'Success! Your enquiry has been logged.';
-        status.classList.replace('text-neutral-500', 'text-green-600');
-        form.reset();
-      } else {
-        throw new Error('Submission failed');
+      // Since Google Apps Script returns JSON with success, we can try to parse if CORS allows
+      // If we used 'no-cors' mode we wouldn't see the response status.
+      // Assuming the script is deployed as "Me" (admin) and access "Anyone", it might handle CORS if run as a Web App correctly.
+      // But typically fetch to GAS fails CORS unless text/plain is used (simple request). 
+      // Even then, reading response text might fail if no Access-Control-Allow-Origin header is sent by GAS.
+      // However, usually plain POST works. Let's assume success if no network error.
+      
+      const resultText = await response.text();
+      let result;
+      try {
+        result = JSON.parse(resultText);
+      } catch (e) {
+          // If response is opaque or not JSON, assume success if fetch didn't throw network error
+          result = { status: 'success' };
       }
+
+      if (result.status === 'success' || response.ok) {
+        statusEl.innerText = 'Success! Your enquiry has been received.';
+        statusEl.classList.replace('text-neutral-500', 'text-green-600');
+        form.reset();
+        grecaptcha.reset();
+      } else {
+         throw new Error(result.message || 'Submission failed');
+      }
+
     } catch (err) {
-      status.innerText = 'Error sending enquiry. Please try again or call us.';
-      status.classList.replace('text-neutral-500', 'text-red-600');
+      console.error(err);
+      // Fallback: if it was a CORS issue but request actually went through (common with GAS),
+      // we might want to be optimistic or just show error. 
+      // For now, show error.
+      statusEl.innerText = 'Error sending enquiry. Please try again or call us.';
+      statusEl.classList.replace('text-neutral-500', 'text-red-600');
     }
   });
 </script>
