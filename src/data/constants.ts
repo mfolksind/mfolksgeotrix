@@ -35,7 +35,7 @@ export const OG = {
   locale: "en_US",
   type: "website",
   url: SITE.url,
-  title: `${SITE.title}: : Hardware Tools & Construction Services`,
+  title: `${SITE.title} - ${SITE.tagline}`,
   description: "Protect your infrastructure with MFOLKS Geotrix's top-quality earthing and lightning protection solutions. Trusted by industry leaders in solar, data centers, and infrastructure. Experience the difference of in-house manufacturing and custom technical solutions.",
   image: ogImageSrc,
 };
