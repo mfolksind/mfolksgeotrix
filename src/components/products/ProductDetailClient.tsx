@@ -59,14 +59,29 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
         {currentVariant.variantPriceType === 'on_request' ? (
           <div className="text-2xl font-bold text-orange-500">Price on Request</div>
         ) : (
-          <div className="flex items-baseline gap-1">
-            <span className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-              ₹{currentVariant.variantPrice?.toLocaleString()}
-            </span>
-            <span className="text-sm text-neutral-500 font-medium">
-              /{currentVariant.variantPriceUnit || 'unit'}
-            </span>
-          </div>
+          <>
+            <div className="flex items-baseline gap-1">
+              <span className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+                ₹{currentVariant.variantPrice?.toLocaleString()}
+              </span>
+              <span className="text-sm text-neutral-500 font-medium">
+                /{currentVariant.variantPriceUnit || 'unit'}
+              </span>
+            </div>
+            {currentVariant.variantPriceLastUpdated && (
+              <p className="text-xs text-neutral-400 mt-1 flex items-center gap-1">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <circle cx="12" cy="12" r="10" />
+                  <polyline points="12 6 12 12 16 14" />
+                </svg>
+                Updated: {new Date(currentVariant.variantPriceLastUpdated).toLocaleDateString('en-IN', {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric'
+                })}
+              </p>
+            )}
+          </>
         )}
         {currentVariant.variantPriceType === 'indicative' && (
           <p className="text-xs text-orange-600 dark:text-orange-400 mt-1 font-medium bg-orange-50 dark:bg-orange-900/30 inline-block px-2 py-1 rounded">
@@ -132,8 +147,8 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
           <button
             onClick={handleAddToCart}
             className={`w-full py-3.5 px-4 rounded-xl font-bold text-center transition-all duration-300 shadow-lg ${added
-                ? 'bg-green-600 text-white shadow-green-200'
-                : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-200 dark:shadow-none'
+              ? 'bg-green-600 text-white shadow-green-200'
+              : 'bg-orange-500 hover:bg-orange-600 text-white shadow-orange-200 dark:shadow-none'
               }`}
           >
             {added ? (

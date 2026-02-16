@@ -1,5 +1,5 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Search, Filter, X, ChevronRight, SlidersHorizontal, PackageX } from 'lucide-react';
 
 interface Product {
@@ -24,6 +24,58 @@ interface Category {
   slug: string;
 }
 
+const WP_URL = import.meta.env.PUBLIC_WORDPRESS_URL || 'https://geotrix.mfolks.com/graphql';
+
+const getSearchQuery = (hasCategory: boolean) => `
+  query SearchProducts(
+    $search: String
+    ${hasCategory ? '$category: [String]' : ''}
+    $first: Int = 100
+  ) {
+    products(
+      where: {
+        search: $search
+        ${hasCategory ? `
+        taxQuery: {
+          taxArray: [
+            {
+              taxonomy: PRODUCTCATEGORY
+              field: SLUG
+              terms: $category
+            }
+          ]
+        }
+        ` : ''}
+      }
+      first: $first
+    ) {
+      nodes {
+        id
+        title
+        slug
+
+        featuredImage {
+          node {
+            sourceUrl
+            altText
+          }
+        }
+
+        productCategories {
+          nodes {
+            name
+            slug
+          }
+        }
+
+        productData {
+          shortDescription
+        }
+      }
+    }
+  }
+`;
+
 export default function ProductList({
   initialProducts,
   categories
@@ -34,19 +86,57 @@ export default function ProductList({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [isMobileFiltersOpen, setIsMobileFiltersOpen] = useState(false);
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const filteredProducts = useMemo(() => initialProducts.filter((product) => {
-    const matchesCategory =
-      selectedCategory === 'all' ||
-      product.productCategories.nodes.some((cat) => cat.slug === selectedCategory);
+  // Fetch products when search or category changes
+  useEffect(() => {
+    const fetchProducts = async () => {
+      // If no search and no category filter, use initial products
+      if (!searchQuery && selectedCategory === 'all') {
+        setProducts(initialProducts);
+        return;
+      }
 
-    const matchesSearch =
-      product.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      product.productData?.shortDescription?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      '';
+      setIsLoading(true);
+      try {
+        const hasCategory = selectedCategory !== 'all';
+        const variables: any = { first: 100 };
 
-    return matchesCategory && matchesSearch;
-  }), [initialProducts, selectedCategory, searchQuery]);
+        if (searchQuery) {
+          variables.search = searchQuery;
+        }
+
+        if (hasCategory) {
+          variables.category = [selectedCategory];
+        }
+
+        const response = await fetch(WP_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            query: getSearchQuery(hasCategory),
+            variables
+          }),
+        });
+
+        const json = await response.json();
+
+        if (json.data?.products?.nodes) {
+          setProducts(json.data.products.nodes);
+        }
+      } catch (error) {
+        console.error('Search failed:', error);
+        setProducts(initialProducts);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    // Debounce search
+    const timeoutId = setTimeout(fetchProducts, 300);
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery, selectedCategory, initialProducts]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start">
@@ -111,8 +201,8 @@ export default function ProductList({
               <button
                 onClick={() => setSelectedCategory('all')}
                 className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === 'all'
-                    ? 'bg-orange-50 dark:bg-orange-400/10 text-orange-600 dark:text-orange-400'
-                    : 'hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
+                  ? 'bg-orange-50 dark:bg-orange-400/10 text-orange-600 dark:text-orange-400'
+                  : 'hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
                   }`}
               >
                 <span className="font-medium text-sm">All Products</span>
@@ -123,14 +213,14 @@ export default function ProductList({
                   key={cat.slug}
                   onClick={() => setSelectedCategory(cat.slug)}
                   className={`w-full text-left px-3 py-2 rounded-lg transition-all flex items-center justify-between group ${selectedCategory === cat.slug
-                      ? 'bg-orange-50 dark:bg-orange-400/10 text-orange-600 dark:text-orange-400'
-                      : 'hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
+                    ? 'bg-orange-50 dark:bg-orange-400/10 text-orange-600 dark:text-orange-400'
+                    : 'hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
                     }`}
                 >
                   <span className="font-medium text-sm">{cat.name}</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full transition-colors ${selectedCategory === cat.slug
-                      ? 'bg-white/50 text-orange-600'
-                      : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'
+                    ? 'bg-white/50 text-orange-600'
+                    : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-500'
                     }`}>
                     {initialProducts.filter(p => p.productCategories?.nodes?.some(c => c.slug === cat.slug)).length}
                   </span>
@@ -145,13 +235,14 @@ export default function ProductList({
       <div className="flex-1 min-w-0">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="font-bold text-neutral-800 dark:text-neutral-200 text-xl">
-            Showing {filteredProducts.length} Result{filteredProducts.length !== 1 ? 's' : ''}
+            Showing {products.length} Result{products.length !== 1 ? 's' : ''}
+            {isLoading && <span className="ml-2 text-sm text-neutral-400">(Searching...)</span>}
           </h2>
         </div>
 
-        {filteredProducts.length > 0 ? (
+        {products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {filteredProducts.map((product, index) => {
+            {products.map((product, index) => {
               // Logic to alternate card sizes if possible, or just keep uniform for filter view
               // Original logic: index % 4 === 0 || index % 4 === 3 -> Small
               // else -> Wide

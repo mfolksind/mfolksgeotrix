@@ -7,6 +7,7 @@ import { Image } from "astro:assets";
 import { wpFetch, ALL_PRODUCTS_QUERY, PRODUCT_BY_SLUG_QUERY } from "@lib/wp";
 import { SITE } from "@data/constants";
 import ProductDetailClient from "@components/products/ProductDetailClient";
+import ProductCarousel from "@components/products/ProductCarousel.astro";
 
 // Global declaration for gsap
 declare global {
@@ -36,9 +37,10 @@ if (!product) {
   return Astro.redirect("/404");
 }
 
-const pageTitle = `${product.title} | ${SITE.title}`;
-const metaDescription = product.productData?.shortDescription || product.title;
-const ogTitle = `${product.title} | Earthing & Lightning Protection | MFOLKS Geotrix`;
+// Dynamic SEO using Rank Math / Yoast template format
+const pageTitle = `${product.title} Supplier in India | ${SITE.title}`;
+const metaDescription = `Manufacturer and supplier of ${product.title} in India. Pan-India delivery for industrial, solar, data center, and infrastructure projects.`;
+const ogTitle = `${product.title} Supplier in India | MFOLKS Geotrix`;
 
 // Define tabs for product detail page
 const tabs = [
@@ -71,9 +73,9 @@ const prices = variants
 // Determine availability based on variants
 // Handle both array format from WordPress and string format from mock data
 const hasInStockVariants = variants.some((v: any) => {
-  const availability = Array.isArray(v.variantAvailability)
-    ? v.variantAvailability[0]
-    : v.variantAvailability;
+  const availability = Array.isArray(v.availability)
+    ? v.availability[0]
+    : v.availability;
   return availability === "in_stock" || availability === "standard";
 });
 const availabilityStatus = hasInStockVariants
@@ -334,6 +336,65 @@ if (prices.length > 0) {
             </div>
           )
         }
+
+        {/* FAQ Section */}
+        {
+          product.productData?.productFaqs &&
+            product.productData.productFaqs.length > 0 && (
+              <div class="space-y-4">
+                <h2 class="text-2xl font-bold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                  <svg
+                    class="w-6 h-6 text-orange-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  Frequently Asked Questions
+                </h2>
+                <div class="space-y-3">
+                  {product.productData.productFaqs.map(
+                    (faq: any, index: number) => (
+                      <div class="border border-neutral-200 dark:border-neutral-700 rounded-xl overflow-hidden faq-item">
+                        <button
+                          class="w-full px-6 py-4 text-left flex items-center justify-between bg-white dark:bg-neutral-900 hover:bg-neutral-50 dark:hover:bg-neutral-800 transition-colors faq-question"
+                          data-faq-index={index}
+                        >
+                          <span class="font-bold text-neutral-900 dark:text-neutral-100 pr-4">
+                            {faq.question}
+                          </span>
+                          <svg
+                            class="w-5 h-5 text-neutral-400 transition-transform faq-icon"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </button>
+                        <div class="faq-answer hidden px-6 py-4 bg-neutral-50 dark:bg-neutral-800/50 border-t border-neutral-200 dark:border-neutral-700">
+                          <p class="text-neutral-600 dark:text-neutral-400 leading-relaxed">
+                            {faq.answer}
+                          </p>
+                        </div>
+                      </div>
+                    ),
+                  )}
+                </div>
+              </div>
+            )
+        }
       </div>
 
       {/* Right Column - Sticky Sidebar */}
@@ -364,6 +425,46 @@ if (prices.length > 0) {
       </div>
     </div>
   </div>
+
+  {/* Related Products Sections */}
+  {
+    (product.productData?.relatedSystems?.nodes?.length > 0 ||
+      product.productData?.compatibleProducts?.nodes?.length > 0 ||
+      product.productData?.recommendedProducts?.nodes?.length > 0) && (
+      <div class="mx-auto max-w-[85rem] px-4 pb-10 sm:px-6 lg:px-8 lg:pb-14 space-y-12">
+        {/* Related Systems */}
+        <ProductCarousel
+          products={product.productData?.relatedSystems?.nodes}
+          variant="orange"
+          title="Related Systems"
+          icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />'
+          badge="System"
+          ctaText="View System"
+        />
+
+        {/* Compatible Products */}
+        <ProductCarousel
+          products={product.productData?.compatibleProducts?.nodes}
+          variant="blue"
+          title="Compatible Products"
+          icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />'
+          badge="Compatible"
+          ctaText="View Details"
+        />
+
+        {/* Recommended Products */}
+        <ProductCarousel
+          products={product.productData?.recommendedProducts?.nodes}
+          variant="green"
+          title="You May Also Need"
+          icon='<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />'
+          badge="Recommended"
+          ctaText="View Details"
+          showGlow={true}
+        />
+      </div>
+    )
+  }
 </MainLayout>
 
 <script>
@@ -499,6 +600,27 @@ if (prices.length > 0) {
     // Attach listeners
     tabButtons.forEach((btn) => {
       btn.addEventListener("click", () => activateTab(btn));
+    });
+
+    // FAQ Accordion functionality
+    const faqQuestions = document.querySelectorAll(".faq-question");
+
+    faqQuestions.forEach((question) => {
+      question.addEventListener("click", function () {
+        const faqItem = this.closest(".faq-item");
+        const answer = faqItem.querySelector(".faq-answer");
+        const icon = this.querySelector(".faq-icon");
+
+        // Toggle answer visibility
+        answer.classList.toggle("hidden");
+
+        // Rotate icon
+        if (answer.classList.contains("hidden")) {
+          icon.style.transform = "rotate(0deg)";
+        } else {
+          icon.style.transform = "rotate(180deg)";
+        }
+      });
     });
   });
 </script>
