@@ -2,6 +2,7 @@
 const navBarLinks = [
   { name: "Products", url: "/products" },
   { name: "Applications", url: "/applications" },
+  { name: "Solar Calculator", url: "/solar-calculator" },
 ];
 // An array of links for footer
 const footerLinks = [
@@ -26,6 +27,7 @@ const footerLinks = [
   {
     section: "Resources",
     links: [
+      { name: "Solar Calculator", url: "/solar-calculator" },
       { name: "Low Resistance Earthing", url: "/low-resistance-earthing" },
       { name: "Quality Standards", url: "/quality" },
     ],

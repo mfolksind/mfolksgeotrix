@@ -1,0 +1,1836 @@
+---
+import MainLayout from "@layouts/MainLayout.astro";
+const pageTitle = "Solar Savings Calculator | MFOLKS Geotrix";
+const metaDesc =
+    "Estimate your solar ROI – system size, savings & payback period for Industrial, Commercial or Residential properties.";
+---
+
+<MainLayout title={pageTitle} customDescription={metaDesc}>
+    <!-- HERO -->
+    <section
+        class="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-cyan-50 dark:from-neutral-800 dark:via-neutral-900 dark:to-neutral-800 pt-28 pb-12 border-b border-neutral-200 dark:border-neutral-700"
+    >
+        <div
+            class="absolute inset-0 opacity-20 pointer-events-none"
+            style="background:radial-gradient(ellipse 80% 60% at 60% 0%,#50c1c8,transparent)"
+        >
+        </div>
+        <!-- scattered solar images -->
+        <img
+            src="https://images.unsplash.com/photo-1509391366360-2e959784a276?w=300&q=60&fit=crop"
+            alt="solar"
+            class="sc-img"
+            style="top:12%;left:3%;transform:rotate(-6deg)"
+        />
+        <img
+            src="https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?w=280&q=60&fit=crop"
+            alt="solar"
+            class="sc-img"
+            style="top:5%;right:4%;transform:rotate(5deg)"
+        />
+        <img
+            src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=260&q=60&fit=crop"
+            alt="solar"
+            class="sc-img"
+            style="bottom:0;left:30%;transform:rotate(-3deg);opacity:.25"
+        />
+        <div class="relative z-10 max-w-3xl mx-auto px-4 text-center">
+            <span
+                class="inline-block bg-primary/10 border border-primary/30 text-primary text-xs font-bold px-4 py-1 rounded-full mb-4 tracking-wider uppercase"
+                >Step-by-Step Solar Estimator</span
+            >
+            <h1
+                class="text-4xl sm:text-5xl font-display font-extrabold text-neutral-800 dark:text-white leading-tight mb-3"
+            >
+                How Much Will You <span
+                    class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-cyan-500"
+                    >Save Going Solar?</span
+                >
+            </h1>
+            <p class="text-neutral-500 text-base max-w-lg mx-auto">
+                Fill the 4 steps below and instantly get your personalised solar
+                savings report with charts.
+            </p>
+        </div>
+    </section>
+
+    <!-- ROADMAP WIZARD -->
+    <section
+        class="bg-neutral-100 dark:bg-neutral-900 py-14 px-4 sm:px-6 relative overflow-hidden"
+    >
+        <!-- floating images (random positions) -->
+        <img
+            src="https://images.unsplash.com/photo-1548337138-e87d889cc369?w=220&q=55&fit=crop"
+            alt=""
+            class="float-img"
+            style="top:3%;right:1%"
+        />
+        <img
+            src="https://images.unsplash.com/photo-1592833159155-c62df1b65634?w=200&q=55&fit=crop"
+            alt=""
+            class="float-img"
+            style="top:40%;left:-30px;transform:rotate(8deg)"
+        />
+        <img
+            src="https://images.unsplash.com/photo-1532601224476-15c79f2f7a51?w=200&q=55&fit=crop"
+            alt=""
+            class="float-img"
+            style="bottom:8%;right:0"
+        />
+
+        <div class="max-w-3xl mx-auto relative z-10">
+            <!-- PROGRESS BAR -->
+            <div
+                class="flex items-center justify-center gap-0 mb-12 select-none"
+                id="roadmap"
+            >
+                {
+                    [
+                        { n: 1, label: "Property" },
+                        { n: 2, label: "Location" },
+                        { n: 3, label: "Electricity" },
+                        { n: 4, label: "Rooftop" },
+                    ].map((s, i) => (
+                        <div class="flex items-center">
+                            <div
+                                class={`step-node ${i === 0 ? "active" : ""}`}
+                                id={`node-${s.n}`}
+                                data-step={s.n}
+                            >
+                                <span class="step-number">{s.n}</span>
+                                <span class="step-label">{s.label}</span>
+                            </div>
+                            {i < 3 && (
+                                <div class="step-line" id={`line-${s.n}`} />
+                            )}
+                        </div>
+                    ))
+                }
+            </div>
+
+            <!-- STEP 1 – Property Type -->
+            <div class="wizard-step active" id="step-1">
+                <div class="step-card">
+                    <div class="step-heading">
+                        <svg
+                            class="step-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            ><path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"
+                            ></path></svg
+                        >
+                        Select Your Property Type
+                    </div>
+                    <div class="grid grid-cols-3 gap-4 mt-5" id="propGroup">
+                        <button
+                            type="button"
+                            data-val="industrial"
+                            class="prop-card active"
+                            id="pc-industrial"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                class="prop-svg"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M2.25 21h19.5m-18-18v18m10.5-18v18m6-13.5V21M6.75 6.75h.75m-.75 3h.75m-.75 3h.75m3-6h.75m-.75 3h.75m-.75 3h.75M6.75 21v-3.375c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21M3 3h12m-.75 4.5H21m-3.75 3.75h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008zm0 3h.008v.008h-.008v-.008z"
+                                ></path></svg
+                            >
+                            <span>Industrial</span>
+                        </button>
+                        <button
+                            type="button"
+                            data-val="commercial"
+                            class="prop-card"
+                            id="pc-commercial"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                class="prop-svg"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M3.75 21h16.5M4.5 3h15M5.25 3v18m13.5-18v18M9 6.75h1.5m-1.5 3h1.5m-1.5 3h1.5m3-6H15m-1.5 3H15m-1.5 3H15M9 21v-3.375c0-.621.504-1.125 1.125-1.125h3.75c.621 0 1.125.504 1.125 1.125V21"
+                                ></path></svg
+                            >
+                            <span>Commercial</span>
+                        </button>
+                        <button
+                            type="button"
+                            data-val="residential"
+                            class="prop-card"
+                            id="pc-residential"
+                        >
+                            <svg
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                class="prop-svg"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25"
+                                ></path></svg
+                            >
+                            <span>Residential</span>
+                        </button>
+                    </div>
+                    <div class="step-nav">
+                        <button type="button" class="btn-next" onclick="goto(2)"
+                            >Next: Location
+                            <svg
+                                class="w-4 h-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                                ></path></svg
+                            >
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2 – Location -->
+            <div class="wizard-step" id="step-2">
+                <div class="step-card">
+                    <div class="step-heading">
+                        <svg
+                            class="step-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            ><path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"
+                            ></path><path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0z"
+                            ></path></svg
+                        >
+                        Your Location
+                    </div>
+                    <p
+                        class="text-xs text-neutral-500 dark:text-neutral-400 mb-4"
+                    >
+                        Used to estimate local solar irradiance for accurate
+                        output calculations.
+                    </p>
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <input
+                                type="text"
+                                id="locationInput"
+                                placeholder="Enter city or state..."
+                                class="loc-input"
+                            />
+                            <svg
+                                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"
+                                ></path><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0z"
+                                ></path></svg
+                            >
+                        </div>
+                        <button
+                            type="button"
+                            id="geoBtn"
+                            class="geo-btn"
+                            onclick="getLocation()"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                ><circle cx="12" cy="12" r="3"></circle><path
+                                    stroke-linecap="round"
+                                    d="M12 2v3m0 14v3M2 12h3m14 0h3"
+                                ></path></svg
+                            >
+                            Get Location
+                        </button>
+                    </div>
+                    <p
+                        id="geoStatus"
+                        class="text-xs mt-2 text-neutral-400 min-h-[16px]"
+                    >
+                    </p>
+
+                    <!-- State selector -->
+                    <div class="mt-4">
+                        <label class="field-label block mb-1" for="stateSelect"
+                            >State / UT</label
+                        >
+                        <select
+                            id="stateSelect"
+                            onchange="onStateChange()"
+                            class="loc-input cursor-pointer"
+                        >
+                            <option value="">-- Select your state --</option>
+                            <option>Andhra Pradesh</option><option
+                                >Arunachal Pradesh</option
+                            >
+                            <option>Assam</option><option>Bihar</option>
+                            <option>Chhattisgarh</option><option>Delhi</option>
+                            <option>Goa</option><option>Gujarat</option>
+                            <option>Haryana</option><option
+                                >Himachal Pradesh</option
+                            >
+                            <option>Jharkhand</option><option>Karnataka</option>
+                            <option>Kerala</option><option
+                                >Madhya Pradesh</option
+                            >
+                            <option>Maharashtra</option><option>Manipur</option>
+                            <option>Meghalaya</option><option>Mizoram</option>
+                            <option>Nagaland</option><option>Odisha</option>
+                            <option>Punjab</option><option>Rajasthan</option>
+                            <option>Sikkim</option><option>Tamil Nadu</option>
+                            <option>Telangana</option><option>Tripura</option>
+                            <option>Uttar Pradesh</option><option
+                                >Uttarakhand</option
+                            >
+                            <option>West Bengal</option>
+                        </select>
+                        <p
+                            id="tariffPreview"
+                            class="text-xs text-primary font-semibold mt-1.5 min-h-[16px]"
+                        >
+                        </p>
+                    </div>
+
+                    <div class="step-nav">
+                        <button type="button" class="btn-back" onclick="goto(1)"
+                            >Back</button
+                        >
+                        <button type="button" class="btn-next" onclick="goto(3)"
+                            >Next: Electricity
+                            <svg
+                                class="w-4 h-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                                ></path></svg
+                            >
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3 – Electricity -->
+            <div class="wizard-step" id="step-3">
+                <div class="step-card">
+                    <div class="step-heading">
+                        <svg
+                            class="step-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            ><path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+                            ></path></svg
+                        >
+                        Electricity Usage
+                    </div>
+
+                    <!-- Tariff info box -->
+                    <div
+                        id="tariffBox"
+                        class="mt-4 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 hidden"
+                    >
+                        <div
+                            class="flex justify-between items-center gap-3 flex-wrap"
+                        >
+                            <div>
+                                <p
+                                    class="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-0.5"
+                                    id="tariffStateLabel"
+                                >
+                                    State Tariff
+                                </p>
+                                <p
+                                    class="text-sm font-bold text-primary"
+                                    id="tariffRange"
+                                >
+                                    —
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <label class="text-xs text-neutral-500"
+                                    >Effective ₹/unit</label
+                                >
+                                <input
+                                    type="number"
+                                    id="tariffInput"
+                                    min="0.5"
+                                    max="25"
+                                    step="0.05"
+                                    value="6.00"
+                                    class="w-20 text-center text-sm font-bold text-primary bg-white dark:bg-neutral-700 border border-primary/40 rounded-lg px-2 py-1 focus:outline-none focus:border-primary"
+                                    oninput="onTariffOverride()"
+                                />
+                            </div>
+                        </div>
+                        <p class="text-xs text-neutral-400 mt-1.5">
+                            Bill = Units × Effective Rate. You can override the
+                            rate above.
+                        </p>
+                    </div>
+
+                    <div class="space-y-6 mt-4">
+                        <!-- Units -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="field-label" for="unitsSlider"
+                                    ><span class="req">*</span> Avg. Units / Month</label
+                                >
+                                <div class="flex items-center gap-1">
+                                    <input
+                                        type="number"
+                                        id="unitsInput"
+                                        value="2000"
+                                        min="0"
+                                        max="40000"
+                                        class="val-input"
+                                    />
+                                    <span class="text-xs text-neutral-500"
+                                        >Units</span
+                                    >
+                                </div>
+                            </div>
+                            <input
+                                type="range"
+                                id="unitsSlider"
+                                min="0"
+                                max="40000"
+                                step="50"
+                                value="2000"
+                                class="calc-slider"
+                            />
+                            <div class="range-labels">
+                                <span>0</span><span>40,000</span>
+                            </div>
+                        </div>
+                        <!-- Bill (auto or manual) -->
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="field-label" for="billSlider">
+                                    <span class="req">*</span> Monthly Bill (Rs.)
+                                    <span
+                                        id="billAutoTag"
+                                        class="ml-1 text-[10px] font-bold text-emerald-500 hidden"
+                                        >(auto)</span
+                                    >
+                                </label>
+                                <div class="flex items-center gap-1">
+                                    <span class="text-xs text-neutral-500"
+                                        >Rs.</span
+                                    >
+                                    <input
+                                        type="number"
+                                        id="billInput"
+                                        value="45000"
+                                        min="0"
+                                        max="500000"
+                                        class="val-input"
+                                    />
+                                    <span class="text-xs text-neutral-500"
+                                        >/mo</span
+                                    >
+                                </div>
+                            </div>
+                            <input
+                                type="range"
+                                id="billSlider"
+                                min="0"
+                                max="500000"
+                                step="500"
+                                value="45000"
+                                class="calc-slider"
+                            />
+                            <div class="range-labels">
+                                <span>Rs. 0</span><span>Rs. 5L</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="step-nav">
+                        <button type="button" class="btn-back" onclick="goto(2)"
+                            >Back</button
+                        >
+                        <button type="button" class="btn-next" onclick="goto(4)"
+                            >Next: Rooftop
+                            <svg
+                                class="w-4 h-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                                ></path></svg
+                            >
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4 – Rooftop -->
+            <div class="wizard-step" id="step-4">
+                <div class="step-card">
+                    <div class="step-heading">
+                        <svg
+                            class="step-icon"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            ><path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M2.25 7.125C2.25 6.504 2.754 6 3.375 6h6c.621 0 1.125.504 1.125 1.125v3.75c0 .621-.504 1.125-1.125 1.125h-6a1.125 1.125 0 0 1-1.125-1.125v-3.75zM14.25 8.625c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v8.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-8.25zM3.75 16.125c0-.621.504-1.125 1.125-1.125h5.25c.621 0 1.125.504 1.125 1.125v2.25c0 .621-.504 1.125-1.125 1.125h-5.25a1.125 1.125 0 0 1-1.125-1.125v-2.25z"
+                            ></path></svg
+                        >
+                        Rooftop Area
+                    </div>
+                    <div class="mt-4">
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="field-label" for="areaSlider"
+                                ><span class="req">*</span> Available Area (Sq. Ft.)</label
+                            >
+                            <div class="flex items-center gap-1">
+                                <input
+                                    type="number"
+                                    id="areaInput"
+                                    value="5000"
+                                    min="0"
+                                    max="100000"
+                                    class="val-input"
+                                />
+                                <span class="text-xs text-neutral-500"
+                                    >Sq.Ft.</span
+                                >
+                            </div>
+                        </div>
+                        <input
+                            type="range"
+                            id="areaSlider"
+                            min="0"
+                            max="100000"
+                            step="100"
+                            value="5000"
+                            class="calc-slider"
+                        />
+                        <div class="range-labels">
+                            <span>0</span><span>1,00,000</span>
+                        </div>
+                    </div>
+                    <div class="step-nav">
+                        <button type="button" class="btn-back" onclick="goto(3)"
+                            >Back</button
+                        >
+                        <button
+                            type="button"
+                            class="btn-calculate"
+                            onclick="showResults()"
+                        >
+                            <svg
+                                class="w-4 h-4"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                ><path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"
+                                ></path></svg
+                            >
+                            Calculate My Savings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- RESULTS -->
+    <section
+        id="results"
+        class="hidden bg-neutral-200 dark:bg-neutral-800 py-14 px-4 sm:px-6"
+    >
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-10">
+                <h2
+                    class="text-3xl font-display font-bold text-neutral-800 dark:text-white mb-1"
+                >
+                    Your Solar <span class="text-primary">Savings Report</span>
+                </h2>
+                <p
+                    class="text-neutral-500 dark:text-neutral-400 text-sm"
+                    id="resultsSubtitle"
+                >
+                </p>
+            </div>
+
+            <!-- KPI CARDS -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+                <div class="kpi-card border-primary/40">
+                    <svg
+                        class="kpi-icon text-primary"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
+                        ></path></svg
+                    >
+                    <p class="kpi-label">System Size</p>
+                    <p class="kpi-value text-primary" id="r-size">—</p>
+                </div>
+                <div class="kpi-card border-amber-400/40">
+                    <svg
+                        class="kpi-icon text-amber-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0z"
+                        ></path></svg
+                    >
+                    <p class="kpi-label">Monthly Output</p>
+                    <p class="kpi-value text-amber-500" id="r-output">—</p>
+                </div>
+                <div class="kpi-card border-emerald-400/40">
+                    <svg
+                        class="kpi-icon text-emerald-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75"
+                        ></path></svg
+                    >
+                    <p class="kpi-label">Total Savings (25yr)</p>
+                    <p class="kpi-value text-emerald-500" id="r-savings">—</p>
+                </div>
+                <div class="kpi-card border-orange-400/40">
+                    <svg
+                        class="kpi-icon text-orange-500"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="1.5"
+                        ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
+                        ></path></svg
+                    >
+                    <p class="kpi-label">Payback Period</p>
+                    <p class="kpi-value text-orange-500" id="r-payback">—</p>
+                </div>
+            </div>
+
+            <!-- YEAR SELECTOR + CHARTS -->
+            <div
+                class="bg-white dark:bg-neutral-700/50 rounded-2xl p-6 shadow-sm border border-neutral-200 dark:border-neutral-600 mb-6"
+            >
+                <div
+                    class="flex flex-wrap justify-between items-center gap-4 mb-6"
+                >
+                    <h3
+                        class="text-base font-bold text-neutral-700 dark:text-white"
+                    >
+                        Savings Over Time
+                    </h3>
+                    <div class="flex gap-2" id="yrGroup">
+                        {
+                            [1, 3, 5, 10, 15, 25].map((y) => (
+                                <button
+                                    type="button"
+                                    data-yr={y}
+                                    class={`yr-btn ${y === 25 ? "active" : ""}`}
+                                >
+                                    {y}yr
+                                </button>
+                            ))
+                        }
+                    </div>
+                </div>
+                <canvas id="barChart" height="220"></canvas>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <!-- Doughnut -->
+                <div
+                    class="bg-white dark:bg-neutral-700/50 rounded-2xl p-6 shadow-sm border border-neutral-200 dark:border-neutral-600"
+                >
+                    <h3
+                        class="text-base font-bold text-neutral-700 dark:text-white mb-4"
+                    >
+                        Investment vs. Returns
+                    </h3>
+                    <div class="flex justify-center">
+                        <canvas id="donutChart" width="220" height="220"
+                        ></canvas>
+                    </div>
+                    <div
+                        class="flex justify-center gap-6 mt-4 text-xs font-semibold"
+                    >
+                        <span class="flex items-center gap-1.5"
+                            ><span
+                                class="w-3 h-3 rounded-full bg-primary inline-block"
+                            ></span>System Cost</span
+                        >
+                        <span class="flex items-center gap-1.5"
+                            ><span
+                                class="w-3 h-3 rounded-full bg-emerald-500 inline-block"
+                            ></span>Net Savings</span
+                        >
+                    </div>
+                </div>
+                <!-- Line Chart -->
+                <div
+                    class="bg-white dark:bg-neutral-700/50 rounded-2xl p-6 shadow-sm border border-neutral-200 dark:border-neutral-600"
+                >
+                    <h3
+                        class="text-base font-bold text-neutral-700 dark:text-white mb-4"
+                    >
+                        Cumulative Savings Curve
+                    </h3>
+                    <canvas id="lineChart" height="220"></canvas>
+                </div>
+            </div>
+
+            <!-- System Price -->
+            <div
+                class="bg-gradient-to-r from-[#0a1628] to-[#0d2137] rounded-2xl p-6 text-white flex flex-col sm:flex-row justify-between items-center gap-4 mb-6"
+            >
+                <div>
+                    <p class="text-neutral-400 text-sm mb-1">
+                        Estimated System Cost
+                    </p>
+                    <p class="text-4xl font-display font-extrabold" id="r-cost">
+                        —
+                    </p>
+                    <p class="text-xs text-neutral-500 mt-1">
+                        Including installation, earthing & commissioning
+                    </p>
+                </div>
+                <a
+                    href="/contact-us"
+                    class="shrink-0 bg-gradient-to-r from-primary to-cyan-400 hover:from-cyan-400 hover:to-primary text-white dark:text-neutral-900 font-bold py-3 px-8 rounded-xl text-sm transition-all duration-300 shadow-lg hover:shadow-primary/30"
+                >
+                    Get Free Quote
+                </a>
+            </div>
+
+            <button
+                type="button"
+                onclick="resetCalc()"
+                class="flex items-center gap-2 text-sm text-neutral-500 hover:text-primary transition mx-auto"
+            >
+                <svg
+                    class="w-4 h-4"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                    ></path></svg
+                >
+                Recalculate
+            </button>
+        </div>
+    </section>
+
+    <!-- WHY SOLAR -->
+    <section
+        class="py-14 px-4 sm:px-6 bg-gradient-to-br from-[#0a1628] to-[#071220]"
+    >
+        <div class="max-w-4xl mx-auto">
+            <h2
+                class="text-2xl font-display font-bold text-white text-center mb-8"
+            >
+                Why Go Solar <span class="text-primary">Now?</span>
+            </h2>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                {
+                    [
+                        {
+                            title: "Cut Bills 90%",
+                            desc: "Drastically reduce monthly electricity costs permanently.",
+                            svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18 9 11.25l4.306 4.306a11.95 11.95 0 0 1 5.814-5.518l2.74-1.22m0 0-5.94-2.281m5.94 2.28-2.28 5.941"/>',
+                        },
+                        {
+                            title: "25yr Warranty",
+                            desc: "Long-term manufacturer guarantees on all panel output.",
+                            svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12z"/>',
+                        },
+                        {
+                            title: "Govt Subsidies",
+                            desc: "50%+ subsidy available for residential solar systems.",
+                            svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/>',
+                        },
+                        {
+                            title: "Zero Carbon",
+                            desc: "Generate clean energy and reduce your carbon footprint.",
+                            svg: '<path stroke-linecap="round" stroke-linejoin="round" d="M12.75 3.03v.568c0 .334.148.65.405.864l1.068.89c.442.369.535 1.01.216 1.49l-.51.766a2.25 2.25 0 0 1-1.161.886l-.143.048a1.107 1.107 0 0 0-.57 1.664c.369.555.169 1.307-.427 1.605L9 13.125l.423 1.059a.956.956 0 0 1-1.652.928l-.679-.906a1.125 1.125 0 0 0-1.906.172L4.5 15.75l-.612.153M12.75 3.031a9 9 0 0 0-8.862 12.872M12.75 3.031A9 9 0 0 1 21 12c0 1.283-.266 2.505-.749 3.617"/>',
+                        },
+                    ].map((b) => (
+                        <div class="bg-white/5 border border-white/10 hover:bg-white/10 transition rounded-2xl p-5">
+                            <svg
+                                class="w-7 h-7 text-primary mb-3"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="1.5"
+                                set:html={b.svg}
+                            />
+                            <p class="text-white font-semibold text-sm mb-1">
+                                {b.title}
+                            </p>
+                            <p class="text-neutral-400 text-xs leading-relaxed">
+                                {b.desc}
+                            </p>
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+    </section>
+</MainLayout>
+
+<!-- CHART.JS CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"
+></script>
+
+<style>
+    /* scattered images */
+    .sc-img,
+    .float-img {
+        position: absolute;
+        width: 160px;
+        height: 110px;
+        object-fit: cover;
+        border-radius: 12px;
+        opacity: 0.22;
+        pointer-events: none;
+        box-shadow: 0 4px 18px #0003;
+    }
+    .float-img {
+        opacity: 0.13;
+        width: 140px;
+        height: 95px;
+    }
+    /* roadmap */
+    .step-node {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+    }
+    .step-number {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 2px solid #d1d5db;
+        background: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.8rem;
+        color: #9ca3af;
+        transition: 0.3s;
+    }
+    .dark .step-number {
+        background: #374151;
+        border-color: #4b5563;
+        color: #6b7280;
+    }
+    .step-label {
+        font-size: 0.65rem;
+        font-weight: 600;
+        color: #9ca3af;
+        white-space: nowrap;
+    }
+    .step-node.active .step-number,
+    .step-node.done .step-number {
+        background: #50c1c8;
+        border-color: #50c1c8;
+        color: #fff;
+    }
+    .step-node.active .step-label,
+    .step-node.done .step-label {
+        color: #50c1c8;
+    }
+    .step-line {
+        width: 60px;
+        height: 2px;
+        background: #d1d5db;
+        margin: 0 4px;
+        margin-bottom: 20px;
+        transition: 0.3s;
+    }
+    .dark .step-line {
+        background: #374151;
+    }
+    .step-line.done {
+        background: #50c1c8;
+    }
+    @media (min-width: 480px) {
+        .step-line {
+            width: 80px;
+        }
+    }
+    /* wizard */
+    .wizard-step {
+        display: none;
+    }
+    .wizard-step.active {
+        display: block;
+    }
+    .step-card {
+        background: #fff;
+        border-radius: 20px;
+        padding: 28px;
+        box-shadow: 0 2px 16px #0001;
+        border: 1px solid #e5e7eb;
+    }
+    .dark .step-card {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    .step-heading {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 4px;
+    }
+    .dark .step-heading {
+        color: #f9fafb;
+    }
+    .step-icon {
+        width: 22px;
+        height: 22px;
+        color: #50c1c8;
+        flex-shrink: 0;
+    }
+    /* prop cards */
+    .prop-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
+        padding: 16px 8px;
+        border-radius: 14px;
+        border: 2px solid #e5e7eb;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: #6b7280;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .dark .prop-card {
+        border-color: #374151;
+        color: #9ca3af;
+    }
+    .prop-card:hover,
+    .prop-card.active {
+        border-color: #50c1c8;
+        background: #50c1c820;
+        color: #50c1c8;
+    }
+    .prop-svg {
+        width: 32px;
+        height: 32px;
+    }
+    /* location */
+    .loc-input {
+        width: 100%;
+        padding: 10px 10px 10px 36px;
+        border-radius: 12px;
+        border: 1px solid #d1d5db;
+        font-size: 0.875rem;
+        background: #f9fafb;
+        color: #1f2937;
+        outline: none;
+        transition: 0.2s;
+    }
+    .loc-input:focus {
+        border-color: #50c1c8;
+        box-shadow: 0 0 0 3px #50c1c820;
+    }
+    .dark .loc-input {
+        background: #374151;
+        border-color: #4b5563;
+        color: #f9fafb;
+    }
+    .geo-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 10px 14px;
+        border-radius: 12px;
+        border: 1px solid #50c1c8;
+        color: #50c1c8;
+        font-size: 0.8rem;
+        font-weight: 700;
+        cursor: pointer;
+        white-space: nowrap;
+        transition: 0.2s;
+    }
+    .geo-btn:hover {
+        background: #50c1c8;
+        color: #fff;
+    }
+    .geo-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+    /* sliders */
+    .calc-slider {
+        width: 100%;
+        height: 6px;
+        appearance: none;
+        border-radius: 999px;
+        cursor: pointer;
+        background: linear-gradient(
+            to right,
+            #50c1c8 0%,
+            #50c1c8 var(--pct, 50%),
+            #e5e7eb var(--pct, 50%),
+            #e5e7eb 100%
+        );
+    }
+    .dark .calc-slider {
+        background: linear-gradient(
+            to right,
+            #50c1c8 0%,
+            #50c1c8 var(--pct, 50%),
+            #374151 var(--pct, 50%),
+            #374151 100%
+        );
+    }
+    .calc-slider::-webkit-slider-thumb {
+        appearance: none;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: #50c1c8;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 6px #50c1c860;
+        transition: 0.15s;
+    }
+    .calc-slider::-webkit-slider-thumb:hover {
+        transform: scale(1.2);
+    }
+    .range-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.68rem;
+        color: #9ca3af;
+        margin-top: 4px;
+    }
+    .field-label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #4b5563;
+    }
+    .dark .field-label {
+        color: #d1d5db;
+    }
+    .req {
+        color: #ef4444;
+        margin-right: 2px;
+    }
+    .val-input {
+        width: 100px;
+        text-align: right;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #50c1c8;
+        background: transparent;
+        border-bottom: 1px solid #50c1c860;
+        outline: none;
+    }
+    /* nav buttons */
+    .step-nav {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 24px;
+    }
+    .btn-back {
+        padding: 9px 18px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid #d1d5db;
+        color: #6b7280;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-back:hover {
+        border-color: #50c1c8;
+        color: #50c1c8;
+    }
+    .dark .btn-back {
+        border-color: #4b5563;
+        color: #9ca3af;
+    }
+    .btn-next {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 9px 20px;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 700;
+        background: #50c1c8;
+        color: #fff;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .btn-next:hover {
+        background: #3a8e94;
+    }
+    .btn-calculate {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 11px 24px;
+        border-radius: 12px;
+        font-size: 0.875rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, #50c1c8, #0a9396);
+        color: #fff;
+        cursor: pointer;
+        box-shadow: 0 4px 14px #50c1c840;
+        transition: 0.2s;
+    }
+    .btn-calculate:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 20px #50c1c860;
+    }
+    /* kpi */
+    .kpi-card {
+        background: #fff;
+        border-radius: 16px;
+        padding: 18px;
+        border: 1px solid #e5e7eb;
+        box-shadow: 0 1px 4px #0001;
+    }
+    .dark .kpi-card {
+        background: #1f2937;
+        border-color: #374151;
+    }
+    .kpi-icon {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 8px;
+    }
+    .kpi-label {
+        font-size: 0.7rem;
+        color: #9ca3af;
+        font-weight: 600;
+        margin-bottom: 2px;
+    }
+    .kpi-value {
+        font-size: 1.3rem;
+        font-weight: 800;
+        font-family: "Outfit", sans-serif;
+    }
+    /* year selector */
+    .yr-btn {
+        padding: 5px 10px;
+        border-radius: 8px;
+        font-size: 0.72rem;
+        font-weight: 700;
+        border: 1px solid #d1d5db;
+        color: #9ca3af;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+    .dark .yr-btn {
+        border-color: #4b5563;
+        color: #9ca3af;
+    }
+    .yr-btn:hover,
+    .yr-btn.active {
+        border-color: #50c1c8;
+        background: #50c1c8;
+        color: #fff;
+    }
+</style>
+
+<script is:inline>
+    // ---- STATE TARIFF DATA (₹/unit ranges: [min, max]) ----
+    const ST = {
+        "Andhra Pradesh": {
+            residential: [2.9, 7.3],
+            commercial: [6.3, 9.0],
+            industrial: [5.35, 7.5],
+        },
+        "Arunachal Pradesh": {
+            residential: [4.0, 5.5],
+            commercial: [5.0, 7.0],
+            industrial: [4.5, 6.0],
+        },
+        Assam: {
+            residential: [4.2, 7.9],
+            commercial: [7.0, 8.5],
+            industrial: [6.5, 8.0],
+        },
+        Bihar: {
+            residential: [3.4, 8.0],
+            commercial: [8.0, 13.0],
+            industrial: [6.5, 8.5],
+        },
+        Chhattisgarh: {
+            residential: [3.5, 7.0],
+            commercial: [6.0, 8.5],
+            industrial: [5.5, 7.5],
+        },
+        Goa: {
+            residential: [1.75, 5.5],
+            commercial: [4.5, 7.0],
+            industrial: [4.0, 6.0],
+        },
+        Gujarat: {
+            residential: [3.6, 7.3],
+            commercial: [8.0, 10.5],
+            industrial: [4.0, 7.5],
+        },
+        Haryana: {
+            residential: [2.2, 7.1],
+            commercial: [6.0, 8.0],
+            industrial: [6.0, 7.5],
+        },
+        "Himachal Pradesh": {
+            residential: [3.3, 6.0],
+            commercial: [5.0, 7.0],
+            industrial: [4.5, 6.0],
+        },
+        Jharkhand: {
+            residential: [3.5, 6.5],
+            commercial: [6.0, 8.0],
+            industrial: [5.5, 7.0],
+        },
+        Karnataka: {
+            residential: [4.75, 7.25],
+            commercial: [5.6, 8.95],
+            industrial: [6.0, 8.0],
+        },
+        Kerala: {
+            residential: [3.0, 7.9],
+            commercial: [6.0, 8.5],
+            industrial: [5.5, 7.5],
+        },
+        "Madhya Pradesh": {
+            residential: [3.5, 7.8],
+            commercial: [6.0, 8.5],
+            industrial: [6.0, 7.5],
+        },
+        Maharashtra: {
+            residential: [4.43, 14.33],
+            commercial: [8.4, 16.97],
+            industrial: [8.0, 10.88],
+        },
+        Manipur: {
+            residential: [3.0, 6.0],
+            commercial: [5.0, 7.0],
+            industrial: [4.5, 6.5],
+        },
+        Meghalaya: {
+            residential: [3.5, 6.5],
+            commercial: [5.5, 7.5],
+            industrial: [5.0, 7.0],
+        },
+        Mizoram: {
+            residential: [3.0, 6.0],
+            commercial: [5.0, 7.0],
+            industrial: [4.5, 6.5],
+        },
+        Nagaland: {
+            residential: [3.5, 6.5],
+            commercial: [5.5, 7.5],
+            industrial: [5.0, 7.0],
+        },
+        Odisha: {
+            residential: [3.0, 6.8],
+            commercial: [5.5, 8.0],
+            industrial: [5.5, 7.5],
+        },
+        Punjab: {
+            residential: [3.78, 7.5],
+            commercial: [8.0, 10.0],
+            industrial: [6.0, 8.0],
+        },
+        Rajasthan: {
+            residential: [3.4, 7.95],
+            commercial: [7.55, 8.95],
+            industrial: [7.1, 7.3],
+        },
+        Sikkim: {
+            residential: [2.0, 5.0],
+            commercial: [4.5, 6.5],
+            industrial: [4.0, 6.0],
+        },
+        "Tamil Nadu": {
+            residential: [4.5, 11.05],
+            commercial: [8.25, 10.0],
+            industrial: [6.0, 8.0],
+        },
+        Telangana: {
+            residential: [1.45, 7.5],
+            commercial: [7.5, 9.5],
+            industrial: [7.0, 11.0],
+        },
+        Tripura: {
+            residential: [3.5, 7.0],
+            commercial: [6.0, 8.5],
+            industrial: [5.5, 7.5],
+        },
+        "Uttar Pradesh": {
+            residential: [3.35, 8.0],
+            commercial: [7.0, 10.0],
+            industrial: [6.9, 10.0],
+        },
+        Uttarakhand: {
+            residential: [3.0, 6.5],
+            commercial: [5.5, 8.0],
+            industrial: [5.0, 7.0],
+        },
+        "West Bengal": {
+            residential: [3.3, 8.5],
+            commercial: [7.0, 9.0],
+            industrial: [6.0, 8.12],
+        },
+        Delhi: {
+            residential: [0.0, 8.0],
+            commercial: [9.0, 10.0],
+            industrial: [7.0, 9.0],
+        },
+    };
+    // Nominatim → dropdown name normalization
+    const STATE_ALIAS = {
+        delhi: "Delhi",
+        "national capital territory of delhi": "Delhi",
+        "nct of delhi": "Delhi",
+        "andhra pradesh": "Andhra Pradesh",
+        "arunachal pradesh": "Arunachal Pradesh",
+        assam: "Assam",
+        bihar: "Bihar",
+        chhattisgarh: "Chhattisgarh",
+        chandigarh: "Punjab",
+        goa: "Goa",
+        gujarat: "Gujarat",
+        haryana: "Haryana",
+        "himachal pradesh": "Himachal Pradesh",
+        jharkhand: "Jharkhand",
+        karnataka: "Karnataka",
+        kerala: "Kerala",
+        "madhya pradesh": "Madhya Pradesh",
+        maharashtra: "Maharashtra",
+        manipur: "Manipur",
+        meghalaya: "Meghalaya",
+        mizoram: "Mizoram",
+        nagaland: "Nagaland",
+        odisha: "Odisha",
+        orissa: "Odisha",
+        punjab: "Punjab",
+        rajasthan: "Rajasthan",
+        sikkim: "Sikkim",
+        "tamil nadu": "Tamil Nadu",
+        telangana: "Telangana",
+        tripura: "Tripura",
+        "uttar pradesh": "Uttar Pradesh",
+        uttarakhand: "Uttarakhand",
+        uttaranchal: "Uttarakhand",
+        "west bengal": "West Bengal",
+    };
+    // ---- app state ----
+    let state = {
+        prop: "industrial",
+        stateName: "",
+        loc: "",
+        bill: 45000,
+        units: 2000,
+        area: 5000,
+        tariff: 6.0, // effective ₹/unit
+        tariffAuto: false, // is bill auto-derived from tariff?
+        years: 25,
+    };
+    let barChart, donutChart, lineChart;
+    const COST_KWP = 42000;
+    const UPK = 120;
+    const ESC = 0.05;
+    const MULT = { industrial: 1.0, commercial: 0.92, residential: 0.85 };
+
+    // ---- tariff helpers ----
+    function getTariffRange(stateName, prop) {
+        const d = ST[stateName];
+        if (!d) return null;
+        const key =
+            prop === "industrial"
+                ? "industrial"
+                : prop === "commercial"
+                  ? "commercial"
+                  : "residential";
+        return d[key];
+    }
+    function midTariff(range) {
+        return +((range[0] + range[1]) / 2).toFixed(2);
+    }
+
+    function onStateChange() {
+        const sel = document.getElementById("stateSelect");
+        state.stateName = sel.value;
+        const range = getTariffRange(state.stateName, state.prop);
+        const box = document.getElementById("tariffBox");
+        const prev = document.getElementById("tariffPreview");
+        if (range) {
+            const mid = midTariff(range);
+            state.tariff = mid;
+            document.getElementById("tariffInput").value = mid.toFixed(2);
+            document.getElementById("tariffStateLabel").textContent =
+                state.stateName + " — " + state.prop + " tariff";
+            document.getElementById("tariffRange").textContent =
+                "₹" +
+                range[0].toFixed(2) +
+                " – ₹" +
+                range[1].toFixed(2) +
+                "/unit (mid: ₹" +
+                mid.toFixed(2) +
+                ")";
+            box.classList.remove("hidden");
+            prev.textContent =
+                "₹" +
+                range[0] +
+                " – ₹" +
+                range[1] +
+                "/unit (" +
+                state.prop +
+                ")";
+            autoBill();
+        } else {
+            box.classList.add("hidden");
+            prev.textContent = "";
+        }
+    }
+    function onTariffOverride() {
+        const v = parseFloat(document.getElementById("tariffInput").value);
+        if (!isNaN(v) && v > 0) {
+            state.tariff = v;
+            autoBill();
+        }
+    }
+    function autoBill() {
+        if (!state.stateName) return;
+        const computed = Math.round(state.units * state.tariff);
+        const clamped = Math.min(computed, 500000);
+        // sync bill slider + input
+        const bs = document.getElementById("billSlider");
+        const bi = document.getElementById("billInput");
+        bs.value = clamped;
+        bi.value = clamped;
+        bs.style.setProperty("--pct", (clamped / 500000) * 100 + "%");
+        state.bill = clamped;
+        state.tariffAuto = true;
+        document.getElementById("billAutoTag").classList.remove("hidden");
+    }
+
+    function fmt(n) {
+        if (n >= 10000000) return "\u20b9" + (n / 10000000).toFixed(2) + " Cr";
+        if (n >= 100000) return "\u20b9" + (n / 100000).toFixed(2) + " L";
+        return "\u20b9" + Math.round(n).toLocaleString("en-IN");
+    }
+    function goto(n) {
+        for (let i = 1; i <= 4; i++) {
+            document
+                .getElementById("step-" + i)
+                .classList.toggle("active", i === n);
+            const nd = document.getElementById("node-" + i);
+            nd.classList.toggle("active", i === n);
+            nd.classList.toggle("done", i < n);
+            if (i < 4) {
+                const ln = document.getElementById("line-" + i);
+                ln.classList.toggle("done", i < n);
+            }
+        }
+    }
+    function getLocation() {
+        const btn = document.getElementById("geoBtn");
+        const status = document.getElementById("geoStatus");
+        if (!navigator.geolocation) {
+            status.textContent = "Geolocation not supported by your browser.";
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = "Locating...";
+        status.textContent = "Fetching your location...";
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                try {
+                    const r = await fetch(
+                        `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`,
+                    );
+                    const d = await r.json();
+                    const city =
+                        d.address.city ||
+                        d.address.town ||
+                        d.address.village ||
+                        d.address.county ||
+                        "";
+                    const rawState = d.address.state || "";
+                    const val = [city, rawState].filter(Boolean).join(", ");
+                    document.getElementById("locationInput").value = val;
+                    state.loc = val;
+
+                    // ── Auto-select state dropdown ──
+                    const normalized = rawState.trim().toLowerCase();
+                    const matched = STATE_ALIAS[normalized] || null;
+                    if (matched) {
+                        const sel = document.getElementById("stateSelect");
+                        sel.value = matched;
+                        onStateChange(); // update tariff box immediately
+                        status.textContent = `Location detected: ${val} — tariff loaded for ${matched}`;
+                    } else {
+                        status.textContent =
+                            "Location detected: " +
+                            val +
+                            " (select state manually for tariff)";
+                    }
+                } catch (e) {
+                    status.textContent =
+                        "Could not reverse geocode. Please type manually.";
+                }
+                btn.disabled = false;
+                btn.innerHTML =
+                    '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg> Get Location';
+            },
+            (err) => {
+                status.textContent = "Location denied. Please enter manually.";
+                btn.disabled = false;
+                btn.innerHTML =
+                    '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg> Get Location';
+            },
+        );
+    }
+    function calcResults(years) {
+        const m = MULT[state.prop] || 1;
+        const kWp = Math.max(1, Math.round((state.units * m) / UPK));
+        const cost = kWp * COST_KWP;
+        const mOut = kWp * UPK;
+        const mSave = Math.min(
+            state.bill,
+            mOut * (state.bill / Math.max(state.units, 1)),
+        );
+        let total = 0,
+            arr = [];
+        for (let y = 1; y <= years; y++) {
+            const s = mSave * 12 * Math.pow(1 + ESC, y - 1) - cost * 0.005;
+            total += s;
+            arr.push({ y, s, cum: total });
+        }
+        const payback = cost / Math.max(mSave * 12, 1);
+        return { kWp, cost, mOut, total, arr, payback };
+    }
+    function isDark() {
+        return document.documentElement.classList.contains("dark");
+    }
+    function textCol() {
+        return isDark() ? "#d1d5db" : "#374151";
+    }
+    function gridCol() {
+        return isDark() ? "#37415155" : "#e5e7eb99";
+    }
+
+    function showResults() {
+        state.loc = document.getElementById("locationInput").value;
+        const r = calcResults(state.years);
+        document.getElementById("r-size").textContent = r.kWp + " kWp";
+        document.getElementById("r-output").textContent =
+            r.mOut.toLocaleString("en-IN") + " units/mo";
+        document.getElementById("r-savings").textContent = fmt(r.total);
+        document.getElementById("r-payback").textContent =
+            r.payback.toFixed(1) + " yrs";
+        document.getElementById("r-cost").textContent = fmt(r.cost);
+        const loc = state.loc ? ` for ${state.loc}` : "";
+        document.getElementById("resultsSubtitle").textContent =
+            `${state.prop.charAt(0).toUpperCase() + state.prop.slice(1)} property${loc} — ${state.years}-year projection`;
+        document.getElementById("results").classList.remove("hidden");
+        document
+            .getElementById("results")
+            .scrollIntoView({ behavior: "smooth" });
+        renderCharts(r);
+    }
+    function renderCharts(r) {
+        const labels = r.arr.map((x) => "Yr " + x.y);
+        const savings = r.arr.map((x) => Math.round(x.s / 1000));
+        const cum = r.arr.map((x) => Math.round(x.cum / 1000));
+        const costK = Math.round(r.cost / 1000);
+        const net25K = Math.round(r.total / 1000);
+        const baseOpts = {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: (c) =>
+                            "\u20b9" + c.parsed.y.toLocaleString("en-IN") + "K",
+                    },
+                },
+            },
+        };
+
+        // Bar
+        const bCtx = document.getElementById("barChart").getContext("2d");
+        if (barChart) barChart.destroy();
+        barChart = new Chart(bCtx, {
+            type: "bar",
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: "Annual Savings",
+                        data: savings,
+                        backgroundColor: "#50c1c8cc",
+                        borderRadius: 6,
+                        hoverBackgroundColor: "#50c1c8",
+                    },
+                ],
+            },
+            options: {
+                ...baseOpts,
+                scales: {
+                    x: {
+                        ticks: { color: textCol(), font: { size: 10 } },
+                        grid: { color: gridCol() },
+                    },
+                    y: {
+                        ticks: {
+                            color: textCol(),
+                            callback: (v) => "\u20b9" + v + "K",
+                        },
+                        grid: { color: gridCol() },
+                    },
+                },
+            },
+        });
+
+        // Donut
+        const dCtx = document.getElementById("donutChart").getContext("2d");
+        if (donutChart) donutChart.destroy();
+        donutChart = new Chart(dCtx, {
+            type: "doughnut",
+            data: {
+                labels: ["System Cost", "Net Savings"],
+                datasets: [
+                    {
+                        data: [costK < 0 ? 0 : costK, net25K < 0 ? 0 : net25K],
+                        backgroundColor: ["#50c1c8", "#10b981"],
+                        borderWidth: 0,
+                        hoverOffset: 8,
+                    },
+                ],
+            },
+            options: {
+                responsive: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: (c) =>
+                                c.label +
+                                ": \u20b9" +
+                                c.raw.toLocaleString("en-IN") +
+                                "K",
+                        },
+                    },
+                },
+                cutout: "68%",
+            },
+        });
+
+        // Line
+        const lCtx = document.getElementById("lineChart").getContext("2d");
+        if (lineChart) lineChart.destroy();
+        const grad = lCtx.createLinearGradient(0, 0, 0, 200);
+        grad.addColorStop(0, "#50c1c840");
+        grad.addColorStop(1, "#50c1c800");
+        lineChart = new Chart(lCtx, {
+            type: "line",
+            data: {
+                labels,
+                datasets: [
+                    {
+                        label: "Cumulative Savings",
+                        data: cum,
+                        borderColor: "#50c1c8",
+                        backgroundColor: grad,
+                        borderWidth: 2.5,
+                        pointRadius: 3,
+                        pointBackgroundColor: "#50c1c8",
+                        fill: true,
+                        tension: 0.35,
+                    },
+                ],
+            },
+            options: {
+                ...baseOpts,
+                plugins: {
+                    ...baseOpts.plugins,
+                    tooltip: {
+                        callbacks: {
+                            label: (c) =>
+                                "\u20b9" +
+                                c.parsed.y.toLocaleString("en-IN") +
+                                "K",
+                        },
+                    },
+                },
+                scales: {
+                    x: {
+                        ticks: { color: textCol(), font: { size: 10 } },
+                        grid: { color: gridCol() },
+                    },
+                    y: {
+                        ticks: {
+                            color: textCol(),
+                            callback: (v) => "\u20b9" + v + "K",
+                        },
+                        grid: { color: gridCol() },
+                    },
+                },
+            },
+        });
+    }
+    function resetCalc() {
+        document.getElementById("results").classList.add("hidden");
+        goto(1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    // ---- slider sync ----
+    function bindSlider(sliderId, inputId, setter) {
+        const s = document.getElementById(sliderId),
+            i = document.getElementById(inputId);
+        const sync = (v) => {
+            const c = Math.max(+s.min, Math.min(+s.max, v));
+            s.value = c;
+            i.value = c;
+            s.style.setProperty(
+                "--pct",
+                ((c - +s.min) / (+s.max - +s.min)) * 100 + "%",
+            );
+            setter(c);
+        };
+        s.addEventListener("input", () => sync(+s.value));
+        i.addEventListener("input", () => sync(+i.value));
+        sync(+s.value);
+    }
+    bindSlider("billSlider", "billInput", (v) => {
+        state.bill = v;
+        state.tariffAuto = false;
+        document.getElementById("billAutoTag").classList.add("hidden");
+    });
+    bindSlider("unitsSlider", "unitsInput", (v) => {
+        state.units = v;
+        autoBill();
+    });
+    bindSlider("areaSlider", "areaInput", (v) => (state.area = v));
+
+    // property type
+    document.getElementById("propGroup").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-val]");
+        if (!b) return;
+        state.prop = b.dataset.val;
+        document
+            .querySelectorAll(".prop-card")
+            .forEach((c) => c.classList.remove("active"));
+        b.classList.add("active");
+        // Refresh tariff when property type changes
+        if (state.stateName) onStateChange();
+    });
+
+    // location input
+    document
+        .getElementById("locationInput")
+        .addEventListener("input", (e) => (state.loc = e.target.value));
+
+    // year selector
+    document.getElementById("yrGroup").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-yr]");
+        if (!b) return;
+        state.years = +b.dataset.yr;
+        document
+            .querySelectorAll(".yr-btn")
+            .forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        const r = calcResults(state.years);
+        document.getElementById("r-savings").textContent = fmt(r.total);
+        const loc = state.loc ? ` for ${state.loc}` : "";
+        document.getElementById("resultsSubtitle").textContent =
+            `${state.prop.charAt(0).toUpperCase() + state.prop.slice(1)} property${loc} — ${state.years}-year projection`;
+        renderCharts(r);
+    });
+</script>
