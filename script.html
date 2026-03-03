@@ -1,0 +1,323 @@
+<script>
+    const isDev = import.meta.env ? import.meta.env.DEV : false;
+    const API_BASE = import.meta.env ? (import.meta.env.PUBLIC_API_BASE || 'http://localhost:3001') : 'http://localhost:3001';
+
+    let state = {
+        prop: "industrial",
+        stateName: "",
+        lat: null,
+        lon: null,
+        bill: 3500,
+        capacityKw: 5,
+        years: 25,
+        lastResult: null,
+        unlocked: false
+    };
+
+    let barChart, donutChart, lineChart;
+    const ESC = 0.05; // 5% tariff escalation
+    const COST_KWP = 42000;
+
+    function onStateChange() {
+        const sel = document.getElementById("stateSelect");
+        state.stateName = sel.value;
+        const prev = document.getElementById("tariffPreview");
+        if (state.stateName) {
+            prev.textContent = "Tariff selected for " + state.stateName;
+        } else {
+            prev.textContent = "";
+        }
+    }
+
+    function goto(n) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        for (let i = 1; i <= 4; i++) {
+            const step = document.getElementById("step-" + i);
+            if(step) step.classList.toggle("active", i === n);
+            const nd = document.getElementById("node-" + i);
+            if(nd) {
+                nd.classList.toggle("active", i === n);
+                nd.classList.toggle("done", i < n);
+            }
+            if (i < 4) {
+                const ln = document.getElementById("line-" + i);
+                if(ln) ln.classList.toggle("done", i < n);
+            }
+        }
+    }
+
+    function getLocation() {
+        const btn = document.getElementById("geoBtn");
+        const status = document.getElementById("geoStatus");
+        const manualBox = document.getElementById("manualLatLon");
+        if (!navigator.geolocation) {
+            status.textContent = "Geolocation not supported by your browser. Please enter manually.";
+            manualBox.classList.remove("hidden");
+            return;
+        }
+        btn.disabled = true;
+        btn.textContent = "Locating...";
+        status.textContent = "Fetching your location...";
+        
+        navigator.geolocation.getCurrentPosition(
+            async (pos) => {
+                state.lat = pos.coords.latitude;
+                state.lon = pos.coords.longitude;
+                document.getElementById('latInput').value = pos.coords.latitude.toFixed(4);
+                document.getElementById('lonInput').value = pos.coords.longitude.toFixed(4);
+                
+                try {
+                    const r = await fetch('https://nominatim.openstreetmap.org/reverse?lat=' + pos.coords.latitude + '&lon=' + pos.coords.longitude + '&format=json');
+                    const d = await r.json();
+                    const rawState = d.address.state || "";
+                    
+                    const STATE_ALIAS = {
+                        "delhi": "Delhi", "national capital territory of delhi": "Delhi", "nct of delhi": "Delhi",
+                        "madhya pradesh": "Madhya Pradesh", "maharashtra": "Maharashtra", "gujarat": "Gujarat",
+                        "rajasthan": "Rajasthan", "uttar pradesh": "Uttar Pradesh", "karnataka": "Karnataka",
+                        "tamil nadu": "Tamil Nadu"
+                    };
+                    
+                    const matched = STATE_ALIAS[rawState.trim().toLowerCase()] || null;
+                    if (matched) {
+                        document.getElementById("stateSelect").value = matched;
+                        onStateChange();
+                        status.textContent = `📍 Location found — state set to ${matched}`;
+                    } else {
+                        status.textContent = `📍 Location found — please select state manually`;
+                    }
+                } catch (e) {
+                    status.textContent = "📍 Location found. Please select your state.";
+                }
+                manualBox.classList.remove("hidden");
+                btn.disabled = false;
+                btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg> Get Location';
+            },
+            (err) => {
+                status.textContent = "Location denied. Please enter manually.";
+                manualBox.classList.remove("hidden");
+                btn.disabled = false;
+                btn.innerHTML = '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg> Get Location';
+            }
+        );
+    }
+
+    async function showResults() {
+        const errorBox = document.getElementById("errorBox");
+        errorBox.classList.add("hidden");
+        errorBox.textContent = "";
+        
+        // Collect exact inputs
+        const latVal = parseFloat(document.getElementById("latInput").value);
+        const lonVal = parseFloat(document.getElementById("lonInput").value);
+        const capacityVal = parseFloat(document.getElementById("capacityInput").value);
+        const billVal = parseFloat(document.getElementById("billInput").value);
+        
+        state.lat = isNaN(latVal) ? state.lat : latVal;
+        state.lon = isNaN(lonVal) ? state.lon : lonVal;
+        state.capacityKw = isNaN(capacityVal) ? 5 : capacityVal;
+        state.bill = isNaN(billVal) ? 3500 : billVal;
+        
+        if (!state.lat || !state.lon) {
+            document.getElementById("manualLatLon").classList.remove("hidden");
+            goto(2);
+            document.getElementById("geoStatus").textContent = "Please provide Latitude and Longitude.";
+            document.getElementById("geoStatus").classList.add("text-red-500");
+            return;
+        }
+        if (!state.stateName) {
+            goto(2);
+            document.getElementById("geoStatus").textContent = "Please select your state.";
+            document.getElementById("geoStatus").classList.add("text-red-500");
+            return;
+        }
+
+        const btn = document.getElementById("calculateBtn");
+        const originalBtnText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Calculating (Est. 5s)...</span>';
+
+        try {
+            const response = await fetch(`${API_BASE}/api/calculate-solar-savings`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    lat: state.lat,
+                    lon: state.lon,
+                    capacity_kw: state.capacityKw,
+                    current_monthly_bill: state.bill,
+                    state: state.stateName,
+                    category: state.prop,
+                })
+            });
+
+            const data = await response.json();
+
+            if (!data.success) {
+                if (response.status === 404) {
+                    throw new Error("We don't have tariff data for your selected state yet.");
+                } else if (response.status === 500) {
+                    throw new Error("System timed out checking solar data. Please try again.");
+                } else {
+                    throw new Error(data.error || "Please check your inputs and try again.");
+                }
+            }
+
+            state.lastResult = data;
+            renderAllResults(data);
+
+            const resSection = document.getElementById("results");
+            resSection.classList.remove("hidden");
+            
+            // Blur / Gate Logic
+            if (!isDev && !state.unlocked) {
+                document.getElementById("blurGate").classList.remove("hidden");
+                // Reset form fields
+                document.getElementById("leadName").value = "";
+                document.getElementById("leadEmail").value = "";
+                document.getElementById("leadPhone").value = "";
+                // Blur the results content
+                document.getElementById("resultsInner").classList.add("blur-md", "pointer-events-none", "select-none");
+            } else {
+                document.getElementById("blurGate").classList.add("hidden");
+                document.getElementById("resultsInner").classList.remove("blur-md", "pointer-events-none", "select-none");
+            }
+            
+            resSection.scrollIntoView({ behavior: "smooth" });
+
+        } catch (e) {
+            errorBox.textContent = e.message;
+            errorBox.classList.remove("hidden");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnText;
+        }
+    }
+
+    function renderAllResults(data) {
+        // Core KPIs
+        document.getElementById("r-tilt").textContent = data.optimal_tilt_angle + "°";
+        document.getElementById("r-annual-generation").textContent = data.solar_generation_annual_kwh.toLocaleString('en-IN') + " kWh";
+        document.getElementById("r-monthly-savings").textContent = "₹" + data.monthly_savings_rs.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        document.getElementById("r-new-bill").textContent = "₹" + data.new_monthly_bill_rs.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        document.getElementById("r-yearly-savings").textContent = "₹" + data.yearly_savings_rs.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+        
+        const loc = state.stateName ? ` for ${state.stateName}` : "";
+        document.getElementById("resultsSubtitle").textContent = 
+            `${state.prop.charAt(0).toUpperCase() + state.prop.slice(1)} property${loc} — ${state.years}-year projection`;
+        
+        generateChartsData(data);
+    }
+    
+    function generateChartsData(apiData) {
+        const years = state.years;
+        const mSave = apiData.monthly_savings_rs;
+        const cost = state.capacityKw * COST_KWP;
+        
+        let total = 0, arr = [];
+        for (let y = 1; y <= years; y++) {
+            const s = mSave * 12 * Math.pow(1 + ESC, y - 1) - (cost * 0.005);
+            total += s;
+            arr.push({ y, s, cum: total });
+        }
+        
+        renderCharts({ arr, cost, total });
+    }
+
+    function renderCharts(r) {
+        const labels = r.arr.map((x) => "Yr " + x.y);
+        const savings = r.arr.map((x) => Math.round(x.s / 1000));
+        const cum = r.arr.map((x) => Math.round(x.cum / 1000));
+        const costK = Math.round(r.cost / 1000);
+        const net25K = Math.round(r.total / 1000);
+        
+        function textCol() { return document.documentElement.classList.contains("dark") ? "#d1d5db" : "#374151"; }
+        function gridCol() { return document.documentElement.classList.contains("dark") ? "#37415155" : "#e5e7eb99"; }
+        
+        const baseOpts = {
+            responsive: true,
+            plugins: {
+                legend: { display: false },
+                tooltip: { callbacks: { label: (c) => "\u20b9" + c.parsed.y.toLocaleString("en-IN") + "K" } }
+            }
+        };
+
+        // Bar
+        const bCtx = document.getElementById("barChart").getContext("2d");
+        if (barChart) barChart.destroy();
+        barChart = new Chart(bCtx, {
+            type: "bar",
+            data: { labels, datasets: [{ label: "Annual Savings", data: savings, backgroundColor: "#50c1c8cc", borderRadius: 6 }] },
+            options: { ...baseOpts, scales: { x: { ticks: { color: textCol(), font: { size: 10 } }, grid: { color: gridCol() } }, y: { ticks: { color: textCol(), callback: (v) => "\u20b9" + v + "K" }, grid: { color: gridCol() } } } }
+        });
+
+        // Donut
+        const dCtx = document.getElementById("donutChart").getContext("2d");
+        if (donutChart) donutChart.destroy();
+        donutChart = new Chart(dCtx, {
+            type: "doughnut",
+            data: { labels: ["System Cost", "Net Savings"], datasets: [{ data: [costK < 0 ? 0 : costK, net25K < 0 ? 0 : net25K], backgroundColor: ["#50c1c8", "#10b981"], borderWidth: 0, hoverOffset: 8 }] },
+            options: { responsive: false, cutout: "68%", plugins: { legend: { display: false } } }
+        });
+
+        // Line
+        const lCtx = document.getElementById("lineChart").getContext("2d");
+        if (lineChart) lineChart.destroy();
+        const grad = lCtx.createLinearGradient(0, 0, 0, 200);
+        grad.addColorStop(0, "#50c1c840"); grad.addColorStop(1, "#50c1c800");
+        lineChart = new Chart(lCtx, {
+            type: "line",
+            data: { labels, datasets: [{ label: "Cumulative Savings", data: cum, borderColor: "#50c1c8", backgroundColor: grad, borderWidth: 2.5, pointRadius: 3, fill: true, tension: 0.35 }] },
+            options: { ...baseOpts, scales: { x: { ticks: { color: textCol() }, grid: { color: gridCol() } }, y: { ticks: { color: textCol(), callback: (v) => "\u20b9" + v + "K" }, grid: { color: gridCol() } } } }
+        });
+    }
+
+    function resetCalc() {
+        document.getElementById("results").classList.add("hidden");
+        goto(1);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function submitLeadForm() {
+        const name = document.getElementById('leadName').value;
+        const email = document.getElementById('leadEmail').value;
+        const phone = document.getElementById('leadPhone').value;
+        if(name && (email || phone)) {
+            state.unlocked = true;
+            document.getElementById("blurGate").classList.add("hidden");
+            document.getElementById("resultsInner").classList.remove("blur-md", "pointer-events-none", "select-none");
+            // Optional: send to backend
+        } else {
+            alert('Please enter your name and at least an email or phone number to unlock your report.');
+        }
+    }
+
+    // Event Listeners
+    document.getElementById("propGroup").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-val]");
+        if (!b) return;
+        state.prop = b.dataset.val;
+        document.querySelectorAll(".prop-card").forEach((c) => c.classList.remove("active"));
+        b.classList.add("active");
+    });
+
+    document.getElementById("yrGroup").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-yr]");
+        if (!b) return;
+        state.years = +b.dataset.yr;
+        document.querySelectorAll(".yr-btn").forEach((x) => x.classList.remove("active"));
+        b.classList.add("active");
+        if (state.lastResult) {
+            document.getElementById("resultsSubtitle").textContent = `${state.prop.charAt(0).toUpperCase() + state.prop.slice(1)} property for ${state.stateName} — ${state.years}-year projection`;
+            generateChartsData(state.lastResult);
+        }
+    });
+
+    // Make functions globally available for inline onclick attributes
+    window.onStateChange = onStateChange;
+    window.goto = goto;
+    window.getLocation = getLocation;
+    window.showResults = showResults;
+    window.resetCalc = resetCalc;
+    window.submitLeadForm = submitLeadForm;
+</script>

@@ -233,39 +233,41 @@ const metaDesc =
                     <p
                         class="text-xs text-neutral-500 dark:text-neutral-400 mb-4"
                     >
-                        Used to estimate local solar irradiance for accurate
-                        output calculations.
+                        Select your state or use <strong>Get Location</strong> to
+                        auto-detect and fill it.
                     </p>
-                    <div class="flex gap-2">
-                        <div class="relative flex-1">
-                            <input
-                                type="text"
-                                id="locationInput"
-                                placeholder="Enter city or state..."
-                                class="loc-input"
-                            />
-                            <svg
-                                class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400"
-                                viewBox="0 0 24 24"
-                                fill="none"
-                                stroke="currentColor"
-                                stroke-width="2"
-                                ><path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0z"
-                                ></path><path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0z"
-                                ></path></svg
+
+                    <!-- State selector + Get Location button side by side -->
+                    <div class="flex gap-2 items-end">
+                        <div class="flex-1">
+                            <label
+                                class="field-label block mb-1"
+                                for="stateSelect">State / UT</label
                             >
+                            <select
+                                id="stateSelect"
+                                onchange="onStateChange()"
+                                class="loc-input cursor-pointer"
+                                style="padding-left:12px"
+                            >
+                                <option value="">-- Select your state --</option
+                                >
+                                <option>Madhya Pradesh</option>
+                                <option>Maharashtra</option>
+                                <option>Gujarat</option>
+                                <option>Rajasthan</option>
+                                <option>Uttar Pradesh</option>
+                                <option>Karnataka</option>
+                                <option>Tamil Nadu</option>
+                                <option>Delhi</option>
+                            </select>
                         </div>
                         <button
                             type="button"
                             id="geoBtn"
                             class="geo-btn"
                             onclick="getLocation()"
+                            style="flex-shrink:0"
                         >
                             <svg
                                 class="w-4 h-4"
@@ -281,53 +283,46 @@ const metaDesc =
                             Get Location
                         </button>
                     </div>
+                    <div id="manualLatLon" class="flex gap-4 mt-4 hidden">
+                        <div class="flex-1">
+                            <label class="field-label block mb-1"
+                                >Latitude</label
+                            >
+                            <input
+                                type="number"
+                                id="latInput"
+                                class="loc-input"
+                                placeholder="e.g. 23.25"
+                                min="-90"
+                                max="90"
+                                step="0.000001"
+                            />
+                        </div>
+                        <div class="flex-1">
+                            <label class="field-label block mb-1"
+                                >Longitude</label
+                            >
+                            <input
+                                type="number"
+                                id="lonInput"
+                                class="loc-input"
+                                placeholder="e.g. 77.41"
+                                min="-180"
+                                max="180"
+                                step="0.000001"
+                            />
+                        </div>
+                    </div>
                     <p
                         id="geoStatus"
                         class="text-xs mt-2 text-neutral-400 min-h-[16px]"
                     >
                     </p>
-
-                    <!-- State selector -->
-                    <div class="mt-4">
-                        <label class="field-label block mb-1" for="stateSelect"
-                            >State / UT</label
-                        >
-                        <select
-                            id="stateSelect"
-                            onchange="onStateChange()"
-                            class="loc-input cursor-pointer"
-                        >
-                            <option value="">-- Select your state --</option>
-                            <option>Andhra Pradesh</option><option
-                                >Arunachal Pradesh</option
-                            >
-                            <option>Assam</option><option>Bihar</option>
-                            <option>Chhattisgarh</option><option>Delhi</option>
-                            <option>Goa</option><option>Gujarat</option>
-                            <option>Haryana</option><option
-                                >Himachal Pradesh</option
-                            >
-                            <option>Jharkhand</option><option>Karnataka</option>
-                            <option>Kerala</option><option
-                                >Madhya Pradesh</option
-                            >
-                            <option>Maharashtra</option><option>Manipur</option>
-                            <option>Meghalaya</option><option>Mizoram</option>
-                            <option>Nagaland</option><option>Odisha</option>
-                            <option>Punjab</option><option>Rajasthan</option>
-                            <option>Sikkim</option><option>Tamil Nadu</option>
-                            <option>Telangana</option><option>Tripura</option>
-                            <option>Uttar Pradesh</option><option
-                                >Uttarakhand</option
-                            >
-                            <option>West Bengal</option>
-                        </select>
-                        <p
-                            id="tariffPreview"
-                            class="text-xs text-primary font-semibold mt-1.5 min-h-[16px]"
-                        >
-                        </p>
-                    </div>
+                    <p
+                        id="tariffPreview"
+                        class="text-xs text-primary font-semibold mt-1 min-h-[16px]"
+                    >
+                    </p>
 
                     <div class="step-nav">
                         <button type="button" class="btn-back" onclick="goto(1)"
@@ -371,125 +366,35 @@ const metaDesc =
                         Electricity Usage
                     </div>
 
-                    <!-- Tariff info box -->
-                    <div
-                        id="tariffBox"
-                        class="mt-4 rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 hidden"
-                    >
-                        <div
-                            class="flex justify-between items-center gap-3 flex-wrap"
-                        >
-                            <div>
-                                <p
-                                    class="text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-0.5"
-                                    id="tariffStateLabel"
-                                >
-                                    State Tariff
-                                </p>
-                                <p
-                                    class="text-sm font-bold text-primary"
-                                    id="tariffRange"
-                                >
-                                    —
-                                </p>
+                    <div class="space-y-6 mt-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="field-label" for="billInput">
+                                    <span class="req">*</span> Monthly Bill (Rs.)
+                                </label>
                             </div>
-                            <div class="flex items-center gap-2">
-                                <label class="text-xs text-neutral-500"
-                                    >Effective ₹/unit</label
+                            <div class="flex items-center gap-2 mt-2">
+                                <span class="text-lg font-bold text-neutral-500"
+                                    >₹</span
                                 >
                                 <input
                                     type="number"
-                                    id="tariffInput"
-                                    min="0.5"
-                                    max="25"
-                                    step="0.05"
-                                    value="6.00"
-                                    class="w-20 text-center text-sm font-bold text-primary bg-white dark:bg-neutral-700 border border-primary/40 rounded-lg px-2 py-1 focus:outline-none focus:border-primary"
-                                    oninput="onTariffOverride()"
+                                    id="billInput"
+                                    value="3500"
+                                    min="0"
+                                    placeholder="e.g. 3500"
+                                    class="w-full text-lg font-bold text-primary bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 focus:outline-none focus:border-primary"
                                 />
                             </div>
+                            <p class="text-xs text-neutral-400 mt-2">
+                                Enter your average monthly electricity bill.
+                            </p>
                         </div>
-                        <p class="text-xs text-neutral-400 mt-1.5">
-                            Bill = Units × Effective Rate. You can override the
-                            rate above.
-                        </p>
                     </div>
-
-                    <div class="space-y-6 mt-4">
-                        <!-- Units -->
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="field-label" for="unitsSlider"
-                                    ><span class="req">*</span> Avg. Units / Month</label
-                                >
-                                <div class="flex items-center gap-1">
-                                    <input
-                                        type="number"
-                                        id="unitsInput"
-                                        value="2000"
-                                        min="0"
-                                        max="40000"
-                                        class="val-input"
-                                    />
-                                    <span class="text-xs text-neutral-500"
-                                        >Units</span
-                                    >
-                                </div>
-                            </div>
-                            <input
-                                type="range"
-                                id="unitsSlider"
-                                min="0"
-                                max="40000"
-                                step="50"
-                                value="2000"
-                                class="calc-slider"
-                            />
-                            <div class="range-labels">
-                                <span>0</span><span>40,000</span>
-                            </div>
-                        </div>
-                        <!-- Bill (auto or manual) -->
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="field-label" for="billSlider">
-                                    <span class="req">*</span> Monthly Bill (Rs.)
-                                    <span
-                                        id="billAutoTag"
-                                        class="ml-1 text-[10px] font-bold text-emerald-500 hidden"
-                                        >(auto)</span
-                                    >
-                                </label>
-                                <div class="flex items-center gap-1">
-                                    <span class="text-xs text-neutral-500"
-                                        >Rs.</span
-                                    >
-                                    <input
-                                        type="number"
-                                        id="billInput"
-                                        value="45000"
-                                        min="0"
-                                        max="500000"
-                                        class="val-input"
-                                    />
-                                    <span class="text-xs text-neutral-500"
-                                        >/mo</span
-                                    >
-                                </div>
-                            </div>
-                            <input
-                                type="range"
-                                id="billSlider"
-                                min="0"
-                                max="500000"
-                                step="500"
-                                value="45000"
-                                class="calc-slider"
-                            />
-                            <div class="range-labels">
-                                <span>Rs. 0</span><span>Rs. 5L</span>
-                            </div>
-                        </div>
+                    <div
+                        id="errorBox"
+                        class="text-red-500 text-sm mt-4 font-semibold hidden bg-red-100 p-3 rounded-lg"
+                    >
                     </div>
                     <div class="step-nav">
                         <button type="button" class="btn-back" onclick="goto(2)"
@@ -534,35 +439,28 @@ const metaDesc =
                     </div>
                     <div class="mt-4">
                         <div class="flex justify-between items-center mb-1">
-                            <label class="field-label" for="areaSlider"
-                                ><span class="req">*</span> Available Area (Sq. Ft.)</label
+                            <label class="field-label" for="capacityInput"
+                                ><span class="req">*</span> System Size (kW)</label
                             >
-                            <div class="flex items-center gap-1">
-                                <input
-                                    type="number"
-                                    id="areaInput"
-                                    value="5000"
-                                    min="0"
-                                    max="100000"
-                                    class="val-input"
-                                />
-                                <span class="text-xs text-neutral-500"
-                                    >Sq.Ft.</span
-                                >
-                            </div>
                         </div>
-                        <input
-                            type="range"
-                            id="areaSlider"
-                            min="0"
-                            max="100000"
-                            step="100"
-                            value="5000"
-                            class="calc-slider"
-                        />
-                        <div class="range-labels">
-                            <span>0</span><span>1,00,000</span>
+                        <div class="flex items-center gap-2 mt-2">
+                            <input
+                                type="number"
+                                id="capacityInput"
+                                value="5"
+                                min="1"
+                                max="500"
+                                step="0.1"
+                                placeholder="e.g. 5"
+                                class="w-full text-lg font-bold text-primary bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 rounded-xl px-4 py-3 focus:outline-none focus:border-primary"
+                            />
+                            <span class="text-lg font-bold text-neutral-500"
+                                >kW</span
+                            >
                         </div>
+                        <p class="text-xs text-neutral-400 mt-2">
+                            Enter your desired solar system capacity.
+                        </p>
                     </div>
                     <div class="step-nav">
                         <button type="button" class="btn-back" onclick="goto(3)"
@@ -571,21 +469,20 @@ const metaDesc =
                         <button
                             type="button"
                             class="btn-calculate"
+                            id="calculateBtn"
                             onclick="showResults()"
                         >
                             <svg
-                                class="w-4 h-4"
+                                class="w-4 h-4 mr-1"
                                 viewBox="0 0 24 24"
                                 fill="none"
                                 stroke="currentColor"
                                 stroke-width="2"
                                 ><path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.581-5.84a14.927 14.927 0 0 0-2.58 5.84m2.699 2.7c-.103.021-.207.041-.311.06a15.09 15.09 0 0 1-2.448-2.448 14.9 14.9 0 0 1 .06-.312m-2.24 2.39a4.493 4.493 0 0 0-1.757 4.306 4.493 4.493 0 0 0 4.306-1.758M16.5 9a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"
+                                    d="M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58"
                                 ></path></svg
                             >
-                            Calculate My Savings
+                            <span>Calculate My Savings</span>
                         </button>
                     </div>
                 </div>
@@ -596,9 +493,61 @@ const metaDesc =
     <!-- RESULTS -->
     <section
         id="results"
-        class="hidden bg-neutral-200 dark:bg-neutral-800 py-14 px-4 sm:px-6"
+        class="hidden bg-neutral-200 dark:bg-neutral-800 py-14 px-4 sm:px-6 relative overflow-hidden"
     >
-        <div class="max-w-5xl mx-auto">
+        <!-- Blur Overlay gate -->
+        <div
+            id="blurGate"
+            class="absolute inset-0 z-50 flex items-center justify-center bg-white/60 dark:bg-neutral-900/70 backdrop-blur-md hidden"
+            style="backdrop-filter: blur(12px);"
+        >
+            <div
+                class="bg-white dark:bg-neutral-800 p-8 rounded-2xl shadow-xl max-w-sm w-full mx-4 border border-neutral-200 dark:border-neutral-700 text-center relative z-50"
+            >
+                <h3
+                    class="text-xl font-bold text-neutral-800 dark:text-white mb-2"
+                >
+                    Unlock Full Report
+                </h3>
+                <p class="text-sm text-neutral-500 dark:text-neutral-400 mb-6">
+                    Enter your details to view and download your complete
+                    personalised solar savings analysis.
+                </p>
+
+                <div class="space-y-3 mb-6">
+                    <input
+                        type="text"
+                        id="leadName"
+                        placeholder="Full Name"
+                        class="w-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg px-4 py-2.5 text-sm focus:border-primary outline-none text-neutral-800 dark:text-white transition-colors"
+                    />
+                    <input
+                        type="email"
+                        id="leadEmail"
+                        placeholder="Email Address"
+                        class="w-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg px-4 py-2.5 text-sm focus:border-primary outline-none text-neutral-800 dark:text-white transition-colors"
+                    />
+                    <input
+                        type="tel"
+                        id="leadPhone"
+                        placeholder="Phone Number"
+                        class="w-full bg-neutral-100 dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-700 rounded-lg px-4 py-2.5 text-sm focus:border-primary outline-none text-neutral-800 dark:text-white transition-colors"
+                    />
+                </div>
+
+                <button
+                    type="button"
+                    onclick="submitLeadForm()"
+                    class="w-full bg-primary hover:bg-cyan-600 text-white font-bold py-3 rounded-xl transition duration-300 shadow-md"
+                >
+                    View Report Now
+                </button>
+            </div>
+        </div>
+        <div
+            class="max-w-5xl mx-auto relative transition-all duration-300"
+            id="resultsInner"
+        >
             <div class="text-center mb-10">
                 <h2
                     class="text-3xl font-display font-bold text-neutral-800 dark:text-white mb-1"
@@ -627,8 +576,8 @@ const metaDesc =
                             d="m3.75 13.5 10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"
                         ></path></svg
                     >
-                    <p class="kpi-label">System Size</p>
-                    <p class="kpi-value text-primary" id="r-size">—</p>
+                    <p class="kpi-label">Optimal Tilt Angle</p>
+                    <p class="kpi-value text-primary" id="r-tilt">—</p>
                 </div>
                 <div class="kpi-card border-amber-400/40">
                     <svg
@@ -643,8 +592,13 @@ const metaDesc =
                             d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0z"
                         ></path></svg
                     >
-                    <p class="kpi-label">Monthly Output</p>
-                    <p class="kpi-value text-amber-500" id="r-output">—</p>
+                    <p class="kpi-label">Annual Generation</p>
+                    <p
+                        class="kpi-value text-amber-500"
+                        id="r-annual-generation"
+                    >
+                        —
+                    </p>
                 </div>
                 <div class="kpi-card border-emerald-400/40">
                     <svg
@@ -659,8 +613,13 @@ const metaDesc =
                             d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75"
                         ></path></svg
                     >
-                    <p class="kpi-label">Total Savings (25yr)</p>
-                    <p class="kpi-value text-emerald-500" id="r-savings">—</p>
+                    <p class="kpi-label">Monthly Savings</p>
+                    <p
+                        class="kpi-value text-emerald-500"
+                        id="r-monthly-savings"
+                    >
+                        —
+                    </p>
                 </div>
                 <div class="kpi-card border-orange-400/40">
                     <svg
@@ -675,8 +634,8 @@ const metaDesc =
                             d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"
                         ></path></svg
                     >
-                    <p class="kpi-label">Payback Period</p>
-                    <p class="kpi-value text-orange-500" id="r-payback">—</p>
+                    <p class="kpi-label">New Monthly Bill</p>
+                    <p class="kpi-value text-orange-500" id="r-new-bill">—</p>
                 </div>
             </div>
 
@@ -757,13 +716,16 @@ const metaDesc =
             >
                 <div>
                     <p class="text-neutral-400 text-sm mb-1">
-                        Estimated System Cost
+                        Estimated Yearly Savings
                     </p>
-                    <p class="text-4xl font-display font-extrabold" id="r-cost">
+                    <p
+                        class="text-4xl font-display font-extrabold"
+                        id="r-yearly-savings"
+                    >
                         —
                     </p>
                     <p class="text-xs text-neutral-500 mt-1">
-                        Including installation, earthing & commissioning
+                        Projected savings on your electricity bill
                     </p>
                 </div>
                 <a
@@ -1222,368 +1184,281 @@ const metaDesc =
 </style>
 
 <script is:inline>
-    // ---- STATE TARIFF DATA (₹/unit ranges: [min, max]) ----
-    const ST = {
-        "Andhra Pradesh": {
-            residential: [2.9, 7.3],
-            commercial: [6.3, 9.0],
-            industrial: [5.35, 7.5],
-        },
-        "Arunachal Pradesh": {
-            residential: [4.0, 5.5],
-            commercial: [5.0, 7.0],
-            industrial: [4.5, 6.0],
-        },
-        Assam: {
-            residential: [4.2, 7.9],
-            commercial: [7.0, 8.5],
-            industrial: [6.5, 8.0],
-        },
-        Bihar: {
-            residential: [3.4, 8.0],
-            commercial: [8.0, 13.0],
-            industrial: [6.5, 8.5],
-        },
-        Chhattisgarh: {
-            residential: [3.5, 7.0],
-            commercial: [6.0, 8.5],
-            industrial: [5.5, 7.5],
-        },
-        Goa: {
-            residential: [1.75, 5.5],
-            commercial: [4.5, 7.0],
-            industrial: [4.0, 6.0],
-        },
-        Gujarat: {
-            residential: [3.6, 7.3],
-            commercial: [8.0, 10.5],
-            industrial: [4.0, 7.5],
-        },
-        Haryana: {
-            residential: [2.2, 7.1],
-            commercial: [6.0, 8.0],
-            industrial: [6.0, 7.5],
-        },
-        "Himachal Pradesh": {
-            residential: [3.3, 6.0],
-            commercial: [5.0, 7.0],
-            industrial: [4.5, 6.0],
-        },
-        Jharkhand: {
-            residential: [3.5, 6.5],
-            commercial: [6.0, 8.0],
-            industrial: [5.5, 7.0],
-        },
-        Karnataka: {
-            residential: [4.75, 7.25],
-            commercial: [5.6, 8.95],
-            industrial: [6.0, 8.0],
-        },
-        Kerala: {
-            residential: [3.0, 7.9],
-            commercial: [6.0, 8.5],
-            industrial: [5.5, 7.5],
-        },
-        "Madhya Pradesh": {
-            residential: [3.5, 7.8],
-            commercial: [6.0, 8.5],
-            industrial: [6.0, 7.5],
-        },
-        Maharashtra: {
-            residential: [4.43, 14.33],
-            commercial: [8.4, 16.97],
-            industrial: [8.0, 10.88],
-        },
-        Manipur: {
-            residential: [3.0, 6.0],
-            commercial: [5.0, 7.0],
-            industrial: [4.5, 6.5],
-        },
-        Meghalaya: {
-            residential: [3.5, 6.5],
-            commercial: [5.5, 7.5],
-            industrial: [5.0, 7.0],
-        },
-        Mizoram: {
-            residential: [3.0, 6.0],
-            commercial: [5.0, 7.0],
-            industrial: [4.5, 6.5],
-        },
-        Nagaland: {
-            residential: [3.5, 6.5],
-            commercial: [5.5, 7.5],
-            industrial: [5.0, 7.0],
-        },
-        Odisha: {
-            residential: [3.0, 6.8],
-            commercial: [5.5, 8.0],
-            industrial: [5.5, 7.5],
-        },
-        Punjab: {
-            residential: [3.78, 7.5],
-            commercial: [8.0, 10.0],
-            industrial: [6.0, 8.0],
-        },
-        Rajasthan: {
-            residential: [3.4, 7.95],
-            commercial: [7.55, 8.95],
-            industrial: [7.1, 7.3],
-        },
-        Sikkim: {
-            residential: [2.0, 5.0],
-            commercial: [4.5, 6.5],
-            industrial: [4.0, 6.0],
-        },
-        "Tamil Nadu": {
-            residential: [4.5, 11.05],
-            commercial: [8.25, 10.0],
-            industrial: [6.0, 8.0],
-        },
-        Telangana: {
-            residential: [1.45, 7.5],
-            commercial: [7.5, 9.5],
-            industrial: [7.0, 11.0],
-        },
-        Tripura: {
-            residential: [3.5, 7.0],
-            commercial: [6.0, 8.5],
-            industrial: [5.5, 7.5],
-        },
-        "Uttar Pradesh": {
-            residential: [3.35, 8.0],
-            commercial: [7.0, 10.0],
-            industrial: [6.9, 10.0],
-        },
-        Uttarakhand: {
-            residential: [3.0, 6.5],
-            commercial: [5.5, 8.0],
-            industrial: [5.0, 7.0],
-        },
-        "West Bengal": {
-            residential: [3.3, 8.5],
-            commercial: [7.0, 9.0],
-            industrial: [6.0, 8.12],
-        },
-        Delhi: {
-            residential: [0.0, 8.0],
-            commercial: [9.0, 10.0],
-            industrial: [7.0, 9.0],
-        },
-    };
-    // Nominatim → dropdown name normalization
-    const STATE_ALIAS = {
-        delhi: "Delhi",
-        "national capital territory of delhi": "Delhi",
-        "nct of delhi": "Delhi",
-        "andhra pradesh": "Andhra Pradesh",
-        "arunachal pradesh": "Arunachal Pradesh",
-        assam: "Assam",
-        bihar: "Bihar",
-        chhattisgarh: "Chhattisgarh",
-        chandigarh: "Punjab",
-        goa: "Goa",
-        gujarat: "Gujarat",
-        haryana: "Haryana",
-        "himachal pradesh": "Himachal Pradesh",
-        jharkhand: "Jharkhand",
-        karnataka: "Karnataka",
-        kerala: "Kerala",
-        "madhya pradesh": "Madhya Pradesh",
-        maharashtra: "Maharashtra",
-        manipur: "Manipur",
-        meghalaya: "Meghalaya",
-        mizoram: "Mizoram",
-        nagaland: "Nagaland",
-        odisha: "Odisha",
-        orissa: "Odisha",
-        punjab: "Punjab",
-        rajasthan: "Rajasthan",
-        sikkim: "Sikkim",
-        "tamil nadu": "Tamil Nadu",
-        telangana: "Telangana",
-        tripura: "Tripura",
-        "uttar pradesh": "Uttar Pradesh",
-        uttarakhand: "Uttarakhand",
-        uttaranchal: "Uttarakhand",
-        "west bengal": "West Bengal",
-    };
-    // ---- app state ----
+    const isDev = window.location.hostname === "localhost";
+    const API_BASE = isDev
+        ? "http://localhost:3001"
+        : "https://your-production-api.com";
+
     let state = {
         prop: "industrial",
         stateName: "",
-        loc: "",
-        bill: 45000,
-        units: 2000,
-        area: 5000,
-        tariff: 6.0, // effective ₹/unit
-        tariffAuto: false, // is bill auto-derived from tariff?
+        lat: null,
+        lon: null,
+        bill: 3500,
+        capacityKw: 5,
         years: 25,
+        lastResult: null,
+        unlocked: false,
     };
-    let barChart, donutChart, lineChart;
-    const COST_KWP = 42000;
-    const UPK = 120;
-    const ESC = 0.05;
-    const MULT = { industrial: 1.0, commercial: 0.92, residential: 0.85 };
 
-    // ---- tariff helpers ----
-    function getTariffRange(stateName, prop) {
-        const d = ST[stateName];
-        if (!d) return null;
-        const key =
-            prop === "industrial"
-                ? "industrial"
-                : prop === "commercial"
-                  ? "commercial"
-                  : "residential";
-        return d[key];
-    }
-    function midTariff(range) {
-        return +((range[0] + range[1]) / 2).toFixed(2);
-    }
+    let barChart, donutChart, lineChart;
+    const ESC = 0.05; // 5% tariff escalation
+    const COST_KWP = 42000;
 
     function onStateChange() {
         const sel = document.getElementById("stateSelect");
         state.stateName = sel.value;
-        const range = getTariffRange(state.stateName, state.prop);
-        const box = document.getElementById("tariffBox");
         const prev = document.getElementById("tariffPreview");
-        if (range) {
-            const mid = midTariff(range);
-            state.tariff = mid;
-            document.getElementById("tariffInput").value = mid.toFixed(2);
-            document.getElementById("tariffStateLabel").textContent =
-                state.stateName + " — " + state.prop + " tariff";
-            document.getElementById("tariffRange").textContent =
-                "₹" +
-                range[0].toFixed(2) +
-                " – ₹" +
-                range[1].toFixed(2) +
-                "/unit (mid: ₹" +
-                mid.toFixed(2) +
-                ")";
-            box.classList.remove("hidden");
-            prev.textContent =
-                "₹" +
-                range[0] +
-                " – ₹" +
-                range[1] +
-                "/unit (" +
-                state.prop +
-                ")";
-            autoBill();
+        if (state.stateName) {
+            prev.textContent = "Tariff selected for " + state.stateName;
         } else {
-            box.classList.add("hidden");
             prev.textContent = "";
         }
     }
-    function onTariffOverride() {
-        const v = parseFloat(document.getElementById("tariffInput").value);
-        if (!isNaN(v) && v > 0) {
-            state.tariff = v;
-            autoBill();
-        }
-    }
-    function autoBill() {
-        if (!state.stateName) return;
-        const computed = Math.round(state.units * state.tariff);
-        const clamped = Math.min(computed, 500000);
-        // sync bill slider + input
-        const bs = document.getElementById("billSlider");
-        const bi = document.getElementById("billInput");
-        bs.value = clamped;
-        bi.value = clamped;
-        bs.style.setProperty("--pct", (clamped / 500000) * 100 + "%");
-        state.bill = clamped;
-        state.tariffAuto = true;
-        document.getElementById("billAutoTag").classList.remove("hidden");
-    }
 
-    function fmt(n) {
-        if (n >= 10000000) return "\u20b9" + (n / 10000000).toFixed(2) + " Cr";
-        if (n >= 100000) return "\u20b9" + (n / 100000).toFixed(2) + " L";
-        return "\u20b9" + Math.round(n).toLocaleString("en-IN");
-    }
     function goto(n) {
+        window.scrollTo({ top: 0, behavior: "smooth" });
         for (let i = 1; i <= 4; i++) {
-            document
-                .getElementById("step-" + i)
-                .classList.toggle("active", i === n);
+            const step = document.getElementById("step-" + i);
+            if (step) step.classList.toggle("active", i === n);
             const nd = document.getElementById("node-" + i);
-            nd.classList.toggle("active", i === n);
-            nd.classList.toggle("done", i < n);
+            if (nd) {
+                nd.classList.toggle("active", i === n);
+                nd.classList.toggle("done", i < n);
+            }
             if (i < 4) {
                 const ln = document.getElementById("line-" + i);
-                ln.classList.toggle("done", i < n);
+                if (ln) ln.classList.toggle("done", i < n);
             }
         }
     }
+
     function getLocation() {
         const btn = document.getElementById("geoBtn");
         const status = document.getElementById("geoStatus");
+        const manualBox = document.getElementById("manualLatLon");
         if (!navigator.geolocation) {
-            status.textContent = "Geolocation not supported by your browser.";
+            status.textContent =
+                "Geolocation not supported by your browser. Please enter manually.";
+            manualBox.classList.remove("hidden");
             return;
         }
         btn.disabled = true;
         btn.textContent = "Locating...";
         status.textContent = "Fetching your location...";
+
         navigator.geolocation.getCurrentPosition(
             async (pos) => {
+                state.lat = pos.coords.latitude;
+                state.lon = pos.coords.longitude;
+                document.getElementById("latInput").value =
+                    pos.coords.latitude.toFixed(4);
+                document.getElementById("lonInput").value =
+                    pos.coords.longitude.toFixed(4);
+
                 try {
                     const r = await fetch(
-                        `https://nominatim.openstreetmap.org/reverse?lat=${pos.coords.latitude}&lon=${pos.coords.longitude}&format=json`,
+                        "https://nominatim.openstreetmap.org/reverse?lat=" +
+                            pos.coords.latitude +
+                            "&lon=" +
+                            pos.coords.longitude +
+                            "&format=json",
                     );
                     const d = await r.json();
-                    const city =
-                        d.address.city ||
-                        d.address.town ||
-                        d.address.village ||
-                        d.address.county ||
-                        "";
                     const rawState = d.address.state || "";
-                    const val = [city, rawState].filter(Boolean).join(", ");
-                    document.getElementById("locationInput").value = val;
-                    state.loc = val;
 
-                    // ── Auto-select state dropdown ──
-                    const normalized = rawState.trim().toLowerCase();
-                    const matched = STATE_ALIAS[normalized] || null;
+                    const STATE_ALIAS = {
+                        delhi: "Delhi",
+                        "national capital territory of delhi": "Delhi",
+                        "nct of delhi": "Delhi",
+                        "madhya pradesh": "Madhya Pradesh",
+                        maharashtra: "Maharashtra",
+                        gujarat: "Gujarat",
+                        rajasthan: "Rajasthan",
+                        "uttar pradesh": "Uttar Pradesh",
+                        karnataka: "Karnataka",
+                        "tamil nadu": "Tamil Nadu",
+                    };
+
+                    const matched =
+                        STATE_ALIAS[rawState.trim().toLowerCase()] || null;
                     if (matched) {
-                        const sel = document.getElementById("stateSelect");
-                        sel.value = matched;
-                        onStateChange(); // update tariff box immediately
-                        status.textContent = `Location detected: ${val} — tariff loaded for ${matched}`;
+                        document.getElementById("stateSelect").value = matched;
+                        onStateChange();
+                        status.textContent = `📍 Location found — state set to ${matched}`;
                     } else {
-                        status.textContent =
-                            "Location detected: " +
-                            val +
-                            " (select state manually for tariff)";
+                        status.textContent = `📍 Location found — please select state manually`;
                     }
                 } catch (e) {
                     status.textContent =
-                        "Could not reverse geocode. Please type manually.";
+                        "📍 Location found. Please select your state.";
                 }
+                manualBox.classList.remove("hidden");
                 btn.disabled = false;
                 btn.innerHTML =
                     '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg> Get Location';
             },
             (err) => {
                 status.textContent = "Location denied. Please enter manually.";
+                manualBox.classList.remove("hidden");
                 btn.disabled = false;
                 btn.innerHTML =
                     '<svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v3m0 14v3M2 12h3m14 0h3"/></svg> Get Location';
             },
         );
     }
-    function calcResults(years) {
-        const m = MULT[state.prop] || 1;
-        const kWp = Math.max(1, Math.round((state.units * m) / UPK));
-        const cost = kWp * COST_KWP;
-        const mOut = kWp * UPK;
-        const mSave = Math.min(
-            state.bill,
-            mOut * (state.bill / Math.max(state.units, 1)),
+
+    async function showResults() {
+        const errorBox = document.getElementById("errorBox");
+        errorBox.classList.add("hidden");
+        errorBox.textContent = "";
+
+        // Collect exact inputs
+        const latVal = parseFloat(document.getElementById("latInput").value);
+        const lonVal = parseFloat(document.getElementById("lonInput").value);
+        const capacityVal = parseFloat(
+            document.getElementById("capacityInput").value,
         );
+        const billVal = parseFloat(document.getElementById("billInput").value);
+
+        state.lat = isNaN(latVal) ? state.lat : latVal;
+        state.lon = isNaN(lonVal) ? state.lon : lonVal;
+        state.capacityKw = isNaN(capacityVal) ? 5 : capacityVal;
+        state.bill = isNaN(billVal) ? 3500 : billVal;
+
+        if (!state.lat || !state.lon) {
+            document.getElementById("manualLatLon").classList.remove("hidden");
+            goto(2);
+            document.getElementById("geoStatus").textContent =
+                "Please provide Latitude and Longitude.";
+            document.getElementById("geoStatus").classList.add("text-red-500");
+            return;
+        }
+        if (!state.stateName) {
+            goto(2);
+            document.getElementById("geoStatus").textContent =
+                "Please select your state.";
+            document.getElementById("geoStatus").classList.add("text-red-500");
+            return;
+        }
+
+        const btn = document.getElementById("calculateBtn");
+        const originalBtnText = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML =
+            '<svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> <span>Calculating (Est. 5s)...</span>';
+
+        try {
+            const response = await fetch(
+                `${API_BASE}/api/calculate-solar-savings`,
+                {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        lat: state.lat,
+                        lon: state.lon,
+                        capacity_kw: state.capacityKw,
+                        current_monthly_bill: state.bill,
+                        state: state.stateName,
+                        category: state.prop,
+                    }),
+                },
+            );
+
+            const data = await response.json();
+
+            if (!data.success) {
+                if (response.status === 404) {
+                    throw new Error(
+                        "We don't have tariff data for your selected state yet.",
+                    );
+                } else if (response.status === 500) {
+                    throw new Error(
+                        "System timed out checking solar data. Please try again.",
+                    );
+                } else {
+                    throw new Error(
+                        data.error || "Please check your inputs and try again.",
+                    );
+                }
+            }
+
+            state.lastResult = data;
+            renderAllResults(data);
+
+            const resSection = document.getElementById("results");
+            resSection.classList.remove("hidden");
+
+            // Blur / Gate Logic
+            if (!isDev && !state.unlocked) {
+                document.getElementById("blurGate").classList.remove("hidden");
+                // Reset form fields
+                document.getElementById("leadName").value = "";
+                document.getElementById("leadEmail").value = "";
+                document.getElementById("leadPhone").value = "";
+                // Blur the results content
+                document
+                    .getElementById("resultsInner")
+                    .classList.add(
+                        "blur-md",
+                        "pointer-events-none",
+                        "select-none",
+                    );
+            } else {
+                document.getElementById("blurGate").classList.add("hidden");
+                document
+                    .getElementById("resultsInner")
+                    .classList.remove(
+                        "blur-md",
+                        "pointer-events-none",
+                        "select-none",
+                    );
+            }
+
+            resSection.scrollIntoView({ behavior: "smooth" });
+        } catch (e) {
+            errorBox.textContent = e.message;
+            errorBox.classList.remove("hidden");
+        } finally {
+            btn.disabled = false;
+            btn.innerHTML = originalBtnText;
+        }
+    }
+
+    function renderAllResults(data) {
+        // Core KPIs
+        document.getElementById("r-tilt").textContent =
+            data.optimal_tilt_angle + "°";
+        document.getElementById("r-annual-generation").textContent =
+            data.solar_generation_annual_kwh.toLocaleString("en-IN") + " kWh";
+        document.getElementById("r-monthly-savings").textContent =
+            "₹" +
+            data.monthly_savings_rs.toLocaleString("en-IN", {
+                maximumFractionDigits: 0,
+            });
+        document.getElementById("r-new-bill").textContent =
+            "₹" +
+            data.new_monthly_bill_rs.toLocaleString("en-IN", {
+                maximumFractionDigits: 0,
+            });
+        document.getElementById("r-yearly-savings").textContent =
+            "₹" +
+            data.yearly_savings_rs.toLocaleString("en-IN", {
+                maximumFractionDigits: 0,
+            });
+
+        const loc = state.stateName ? ` for ${state.stateName}` : "";
+        document.getElementById("resultsSubtitle").textContent =
+            `${state.prop.charAt(0).toUpperCase() + state.prop.slice(1)} property${loc} — ${state.years}-year projection`;
+
+        generateChartsData(data);
+    }
+
+    function generateChartsData(apiData) {
+        const years = state.years;
+        const mSave = apiData.monthly_savings_rs;
+        const cost = state.capacityKw * COST_KWP;
+
         let total = 0,
             arr = [];
         for (let y = 1; y <= years; y++) {
@@ -1591,44 +1466,28 @@ const metaDesc =
             total += s;
             arr.push({ y, s, cum: total });
         }
-        const payback = cost / Math.max(mSave * 12, 1);
-        return { kWp, cost, mOut, total, arr, payback };
-    }
-    function isDark() {
-        return document.documentElement.classList.contains("dark");
-    }
-    function textCol() {
-        return isDark() ? "#d1d5db" : "#374151";
-    }
-    function gridCol() {
-        return isDark() ? "#37415155" : "#e5e7eb99";
+
+        renderCharts({ arr, cost, total });
     }
 
-    function showResults() {
-        state.loc = document.getElementById("locationInput").value;
-        const r = calcResults(state.years);
-        document.getElementById("r-size").textContent = r.kWp + " kWp";
-        document.getElementById("r-output").textContent =
-            r.mOut.toLocaleString("en-IN") + " units/mo";
-        document.getElementById("r-savings").textContent = fmt(r.total);
-        document.getElementById("r-payback").textContent =
-            r.payback.toFixed(1) + " yrs";
-        document.getElementById("r-cost").textContent = fmt(r.cost);
-        const loc = state.loc ? ` for ${state.loc}` : "";
-        document.getElementById("resultsSubtitle").textContent =
-            `${state.prop.charAt(0).toUpperCase() + state.prop.slice(1)} property${loc} — ${state.years}-year projection`;
-        document.getElementById("results").classList.remove("hidden");
-        document
-            .getElementById("results")
-            .scrollIntoView({ behavior: "smooth" });
-        renderCharts(r);
-    }
     function renderCharts(r) {
         const labels = r.arr.map((x) => "Yr " + x.y);
         const savings = r.arr.map((x) => Math.round(x.s / 1000));
         const cum = r.arr.map((x) => Math.round(x.cum / 1000));
         const costK = Math.round(r.cost / 1000);
         const net25K = Math.round(r.total / 1000);
+
+        function textCol() {
+            return document.documentElement.classList.contains("dark")
+                ? "#d1d5db"
+                : "#374151";
+        }
+        function gridCol() {
+            return document.documentElement.classList.contains("dark")
+                ? "#37415155"
+                : "#e5e7eb99";
+        }
+
         const baseOpts = {
             responsive: true,
             plugins: {
@@ -1655,7 +1514,6 @@ const metaDesc =
                         data: savings,
                         backgroundColor: "#50c1c8cc",
                         borderRadius: 6,
-                        hoverBackgroundColor: "#50c1c8",
                     },
                 ],
             },
@@ -1695,19 +1553,8 @@ const metaDesc =
             },
             options: {
                 responsive: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        callbacks: {
-                            label: (c) =>
-                                c.label +
-                                ": \u20b9" +
-                                c.raw.toLocaleString("en-IN") +
-                                "K",
-                        },
-                    },
-                },
                 cutout: "68%",
+                plugins: { legend: { display: false } },
             },
         });
 
@@ -1729,7 +1576,6 @@ const metaDesc =
                         backgroundColor: grad,
                         borderWidth: 2.5,
                         pointRadius: 3,
-                        pointBackgroundColor: "#50c1c8",
                         fill: true,
                         tension: 0.35,
                     },
@@ -1737,20 +1583,9 @@ const metaDesc =
             },
             options: {
                 ...baseOpts,
-                plugins: {
-                    ...baseOpts.plugins,
-                    tooltip: {
-                        callbacks: {
-                            label: (c) =>
-                                "\u20b9" +
-                                c.parsed.y.toLocaleString("en-IN") +
-                                "K",
-                        },
-                    },
-                },
                 scales: {
                     x: {
-                        ticks: { color: textCol(), font: { size: 10 } },
+                        ticks: { color: textCol() },
                         grid: { color: gridCol() },
                     },
                     y: {
@@ -1764,42 +1599,36 @@ const metaDesc =
             },
         });
     }
+
     function resetCalc() {
         document.getElementById("results").classList.add("hidden");
         goto(1);
         window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
-    // ---- slider sync ----
-    function bindSlider(sliderId, inputId, setter) {
-        const s = document.getElementById(sliderId),
-            i = document.getElementById(inputId);
-        const sync = (v) => {
-            const c = Math.max(+s.min, Math.min(+s.max, v));
-            s.value = c;
-            i.value = c;
-            s.style.setProperty(
-                "--pct",
-                ((c - +s.min) / (+s.max - +s.min)) * 100 + "%",
+    function submitLeadForm() {
+        const name = document.getElementById("leadName").value;
+        const email = document.getElementById("leadEmail").value;
+        const phone = document.getElementById("leadPhone").value;
+        if (name && (email || phone)) {
+            state.unlocked = true;
+            document.getElementById("blurGate").classList.add("hidden");
+            document
+                .getElementById("resultsInner")
+                .classList.remove(
+                    "blur-md",
+                    "pointer-events-none",
+                    "select-none",
+                );
+            // Optional: send to backend
+        } else {
+            alert(
+                "Please enter your name and at least an email or phone number to unlock your report.",
             );
-            setter(c);
-        };
-        s.addEventListener("input", () => sync(+s.value));
-        i.addEventListener("input", () => sync(+i.value));
-        sync(+s.value);
+        }
     }
-    bindSlider("billSlider", "billInput", (v) => {
-        state.bill = v;
-        state.tariffAuto = false;
-        document.getElementById("billAutoTag").classList.add("hidden");
-    });
-    bindSlider("unitsSlider", "unitsInput", (v) => {
-        state.units = v;
-        autoBill();
-    });
-    bindSlider("areaSlider", "areaInput", (v) => (state.area = v));
 
-    // property type
+    // Event Listeners
     document.getElementById("propGroup").addEventListener("click", (e) => {
         const b = e.target.closest("[data-val]");
         if (!b) return;
@@ -1808,16 +1637,8 @@ const metaDesc =
             .querySelectorAll(".prop-card")
             .forEach((c) => c.classList.remove("active"));
         b.classList.add("active");
-        // Refresh tariff when property type changes
-        if (state.stateName) onStateChange();
     });
 
-    // location input
-    document
-        .getElementById("locationInput")
-        .addEventListener("input", (e) => (state.loc = e.target.value));
-
-    // year selector
     document.getElementById("yrGroup").addEventListener("click", (e) => {
         const b = e.target.closest("[data-yr]");
         if (!b) return;
@@ -1826,11 +1647,18 @@ const metaDesc =
             .querySelectorAll(".yr-btn")
             .forEach((x) => x.classList.remove("active"));
         b.classList.add("active");
-        const r = calcResults(state.years);
-        document.getElementById("r-savings").textContent = fmt(r.total);
-        const loc = state.loc ? ` for ${state.loc}` : "";
-        document.getElementById("resultsSubtitle").textContent =
-            `${state.prop.charAt(0).toUpperCase() + state.prop.slice(1)} property${loc} — ${state.years}-year projection`;
-        renderCharts(r);
+        if (state.lastResult) {
+            document.getElementById("resultsSubtitle").textContent =
+                `${state.prop.charAt(0).toUpperCase() + state.prop.slice(1)} property for ${state.stateName} — ${state.years}-year projection`;
+            generateChartsData(state.lastResult);
+        }
     });
+
+    // Make functions globally available for inline onclick attributes
+    window.onStateChange = onStateChange;
+    window.goto = goto;
+    window.getLocation = getLocation;
+    window.showResults = showResults;
+    window.resetCalc = resetCalc;
+    window.submitLeadForm = submitLeadForm;
 </script>

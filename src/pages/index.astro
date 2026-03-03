@@ -7,7 +7,6 @@ import FeaturesGeneral from "@components/sections/features/FeaturesGeneral.astro
 import FeaturesNavs from "@components/sections/features/FeaturesNavs.astro";
 import TestimonialsSection from "@components/sections/testimonials/TestimonialsSection.astro";
 import HeroSectionAlt from "@components/sections/landing/HeroSectionAlt.astro";
-import features from "@data/features.json";
 import { partnersData } from "@data/constants";
 
 // Import images
@@ -18,8 +17,6 @@ import lightningImage from "@images/lightning-protection.png";
 import solarImage from "@images/construction-image.avif";
 import cableManagementImage from "@images/cable-management.png";
 import conductorsImage from "@images/conductors-cables.png";
-import manufacturingImage from "@images/construction-workers.avif";
-import testingImage from "@images/using-tools.avif";
 import whyChooseImage from "@images/why-choose.webp";
 
 import FeaturesStats from "@components/sections/features/FeaturesStats.astro";
@@ -103,7 +100,6 @@ const avatarSrcs: Array<string> = [
         svg: "dashboard",
         src: lightningImage,
         alt: "ESE lightning arrestor on structural header",
-        second: true,
       },
       {
         heading: "Conductors & Cables",
@@ -140,29 +136,34 @@ const avatarSrcs: Array<string> = [
     features={[
       {
         heading: "Solar Power Plants",
-        content: "Specialized grounding and lightning protection for large-scale PV arrays and inverter stations.",
-        svg: "house"
+        content:
+          "Specialized grounding and lightning protection for large-scale PV arrays and inverter stations.",
+        svg: "house",
       },
       {
         heading: "Infrastructure & Railways",
-        content: "Durable electrical safety solutions for metros, railways, and public transit networks.",
-        svg: "hammer"
+        content:
+          "Durable electrical safety solutions for metros, railways, and public transit networks.",
+        svg: "hammer",
       },
       {
         heading: "Data Centers",
-        content: "Precision sub-1-ohm earthing for signal reference grids and ultra-sensitive IT hardware.",
-        svg: "dashboard"
+        content:
+          "Precision sub-1-ohm earthing for signal reference grids and ultra-sensitive IT hardware.",
+        svg: "dashboard",
       },
       {
         heading: "Industrial Plants",
-        content: "Robust protection for manufacturing lines, chemical plants, and heavy engineering facilities.",
-        svg: "frame"
+        content:
+          "Robust protection for manufacturing lines, chemical plants, and heavy engineering facilities.",
+        svg: "frame",
       },
       {
         heading: "Commercial Buildings",
-        content: "Complete structural protection for skyscrapers, malls, and institutional campuses.",
-        svg: "community"
-      }
+        content:
+          "Complete structural protection for skyscrapers, malls, and institutional campuses.",
+        svg: "community",
+      },
     ]}
   />
 
@@ -173,7 +174,7 @@ const avatarSrcs: Array<string> = [
       "In-house manufacturing for total quality control",
       "Rigorous testing compliant with IS & IEC standards",
       "Custom technical solutions for complex sites",
-      "Reliable logistics and on-time project delivery"
+      "Reliable logistics and on-time project delivery",
     ]}
     src={whyChooseImage}
     alt="High-quality MFOLKS Geotrix manufacturing process and expertise"
@@ -214,7 +215,6 @@ const avatarSrcs: Array<string> = [
       },
     ]}
   />
-
 
   <HeroSectionAlt
     title="Let's Protect Your Infrastructure Together"

@@ -591,7 +591,7 @@ if (prices.length > 0) {
           pane.classList.remove("hidden");
           // Re-trigger animation if needed
           pane.classList.remove("animate-fade-in");
-          void pane.offsetWidth; // trigger reflow
+          void (pane as HTMLElement).offsetWidth; // trigger reflow
           pane.classList.add("animate-fade-in");
         }
       });

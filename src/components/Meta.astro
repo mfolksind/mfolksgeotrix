@@ -32,10 +32,8 @@ const ogDescription = customDescription || OG.description;
 // Define the metadata for your website and individual pages
 const siteURL = `${Astro.site}`; // Set the website URL in astro.config.mjs
 const author = SITE.author;
-const canonical = new URL(
-  Astro.url.pathname,
-  Astro.site || Astro.url.origin
-).href;
+const canonical = new URL(Astro.url.pathname, Astro.site || Astro.url.origin)
+  .href;
 const basePath = Astro.url.pathname;
 
 let socialImage = customSocialImage;
@@ -74,11 +72,12 @@ const alternateLanguageLinks: string = Object.entries(languages)
     return `<link rel="alternate" hreflang="${lang}" href="${href}" />`;
   })
   .join("\n");
-
 ---
 
-{/*  Inject structured data into the page if provided. This data is formatted as JSON-LD, a method recommended by Google for structured data pass:
-     https://developers.google.com/search/docs/advanced/structured-data/intro-structured-data */}{
+{
+  /*  Inject structured data into the page if provided. This data is formatted as JSON-LD, a method recommended by Google for structured data pass:
+     https://developers.google.com/search/docs/advanced/structured-data/intro-structured-data */
+}{
   structuredData && (
     <script
       type="application/ld+json"
@@ -100,23 +99,26 @@ const alternateLanguageLinks: string = Object.entries(languages)
 
 {/* Facebook Meta Tags */}
 <meta property="og:locale" content="en_US" />
-<meta property="og:url" content={siteURL} />
+<meta property="og:url" content={canonical} />
 <meta property="og:type" content="website" />
 <meta property="og:title" content={ogTitle} />
 <meta property="og:site_name" content={SITE.title} />
 <meta property="og:description" content={ogDescription} />
 <meta property="og:image" content={socialImage} />
+<meta property="og:image:secure_url" content={socialImage} />
 <meta content="1200" property="og:image:width" />
 <meta content="600" property="og:image:height" />
 <meta content="image/png" property="og:image:type" />
+<meta property="og:image:alt" content={ogTitle} />
 
 {/* Twitter Meta Tags */}
 <meta name="twitter:card" content="summary_large_image" />
-<meta property="twitter:domain" content={siteURL} />
-<meta property="twitter:url" content={siteURL} />
+<meta property="twitter:domain" content={SITE.url} />
+<meta property="twitter:url" content={canonical} />
 <meta name="twitter:title" content={ogTitle} />
 <meta name="twitter:description" content={ogDescription} />
 <meta name="twitter:image" content={socialImage} />
+<meta name="twitter:image:alt" content={ogTitle} />
 
 {/* Links to the webmanifest and sitemap */}
 {/* https://docs.astro.build/en/guides/integrations-guide/sitemap/ */}
