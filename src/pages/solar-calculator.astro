@@ -1183,11 +1183,14 @@ const metaDesc =
     }
 </style>
 
-<script is:inline>
-    const isDev = window.location.hostname === "localhost";
+<script>
+    const isDev = import.meta.env.PUBLIC_DEV === "true";
     const API_BASE = isDev
         ? "http://localhost:3001"
-        : "https://your-production-api.com";
+        : import.meta.env.PUBLIC_API_BASE ||
+          "https://mfolkssolarbackend.onrender.com";
+
+    console.log("Using API Base:", API_BASE);
 
     let state = {
         prop: "industrial",
