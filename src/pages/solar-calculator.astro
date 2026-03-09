@@ -1183,14 +1183,14 @@ const metaDesc =
     }
 </style>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js" is:inline></script>
 <script>
+    // @ts-nocheck
     const isDev = import.meta.env.PUBLIC_DEV === "true";
     const API_BASE = isDev
         ? "http://localhost:3001"
         : import.meta.env.PUBLIC_API_BASE ||
           "https://mfolkssolarbackend.onrender.com";
-
-    console.log("Using API Base:", API_BASE);
 
     let state = {
         prop: "industrial",
