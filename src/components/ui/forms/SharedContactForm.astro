@@ -1,0 +1,295 @@
+---
+import AuthBtn from "@components/ui/buttons/AuthBtn.astro";
+import TextInput from "@components/ui/forms/input/TextInput.astro";
+import EmailContactInput from "@components/ui/forms/input/EmailContactInput.astro";
+import PhoneInput from "@components/ui/forms/input/PhoneInput.astro";
+import TextAreaInput from "@components/ui/forms/input/TextAreaInput.astro";
+import SelectInput from "@components/ui/forms/input/SelectInput.astro";
+
+interface Props {
+  id: string;
+  buttonTitle?: string;
+  source?: string;
+}
+
+const { id, buttonTitle = "Send Enquiry", source = "MFolks Geotrix Site" } = Astro.props;
+---
+
+<form id={id} class="space-y-6 shared-contact-form" data-form-source={source}>
+  <!-- Context Data for Parents -->
+  <input type="hidden" name="context_data" id={`${id}-context-data`} />
+
+  <!-- Personal Details -->
+  <div class="space-y-4">
+    <h3 class="text-sm font-semibold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider flex items-center gap-2">
+      <span class="w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-xs font-bold">1</span>
+      Personal Information
+    </h3>
+
+    <TextInput id={`${id}-name`} label="Full Name" name="name" />
+
+    <div class="grid sm:grid-cols-2 gap-4">
+      <EmailContactInput id={`${id}-email`} />
+      <PhoneInput id={`${id}-phone`} />
+    </div>
+  </div>
+
+  <!-- Company Details -->
+  <div class="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+    <h3 class="text-sm font-semibold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider flex items-center gap-2">
+      <span class="w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-xs font-bold">2</span>
+      Company Information
+    </h3>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <TextInput id={`${id}-company`} label="Company Name" name="company" />
+          <SelectInput
+            id={`${id}-company-type`}
+            label="Company Type"
+            name="company_type"
+            options={[
+              { value: "", label: "Select type" },
+              { value: "epc-contractor", label: "EPC Contractor" },
+              { value: "manufacturer", label: "Manufacturer" },
+              { value: "distributor", label: "Distributor / Dealer" },
+              { value: "end-user", label: "End User / Project Owner" },
+              { value: "consultant", label: "Consultant / Engineer" },
+              { value: "government", label: "Government / PSU" },
+              { value: "other", label: "Other" },
+            ]}
+          />
+        </div>
+      </div>
+
+      <!-- Location -->
+      <div class="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+        <h3 class="text-sm font-semibold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider flex items-center gap-2">
+          <span class="w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-xs font-bold">3</span>
+          Project Location
+        </h3>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <TextInput id={`${id}-city`} label="City" name="city" />
+          <TextInput id={`${id}-state`} label="State / Province" name="state" />
+        </div>
+
+        <div>
+          <SelectInput
+            id={`${id}-country`}
+            label="Country"
+            name="country"
+            options={[
+              { value: "", label: "Select country" },
+              { value: "IN", label: "India" },
+              { value: "AE", label: "UAE" },
+              { value: "SA", label: "Saudi Arabia" },
+              { value: "QA", label: "Qatar" },
+              { value: "OM", label: "Oman" },
+              { value: "BD", label: "Bangladesh" },
+              { value: "LK", label: "Sri Lanka" },
+              { value: "NP", label: "Nepal" },
+              { value: "OTHER", label: "Other" },
+            ]}
+          />
+          <input
+            type="text"
+            id={`${id}-country-other`}
+            name="country_other"
+            placeholder="Please specify country"
+            class="hidden mt-2 block w-full rounded-lg border border-neutral-200 bg-neutral-50 px-4 py-3 text-sm text-neutral-700 placeholder:text-neutral-500 focus:border-orange-500 focus:outline-hidden focus:ring-2 focus:ring-orange-500/20 dark:border-neutral-600 dark:bg-neutral-700/30 dark:text-neutral-300 dark:placeholder:text-neutral-400"
+          />
+        </div>
+      </div>
+
+      <!-- Requirements -->
+      <div class="space-y-4 pt-4 border-t border-neutral-200 dark:border-neutral-700">
+        <h3 class="text-sm font-semibold text-neutral-700 dark:text-neutral-300 uppercase tracking-wider flex items-center gap-2">
+          <span class="w-6 h-6 bg-orange-100 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 rounded-full flex items-center justify-center text-xs font-bold">4</span>
+          Project Requirements
+        </h3>
+
+        <div class="grid sm:grid-cols-2 gap-4">
+          <SelectInput
+            id={`${id}-product`}
+            label="Product / Service Required"
+            name="product"
+            options={[
+              { value: "", label: "Select product/service" },
+              { value: "earthing-rods", label: "Earthing Rods (Chemical/Copper)" },
+              { value: "lightning-arrestors", label: "Lightning Arrestors (ESE/Conventional)" },
+              { value: "earthing-strips", label: "Earthing Strips & Flats" },
+              { value: "bfc-compound", label: "BFC / Backfill Compound" },
+              { value: "maintenance-audit", label: "Maintenance & Audits" },
+              { value: "turnkey-solution", label: "Turnkey Earthing Solution" },
+              { value: "other-custom", label: "Other / Custom Solution" },
+            ]}
+          />
+          <TextInput id={`${id}-quantity`} label="Estimated Quantity (Optional)" name="quantity" />
+        </div>
+
+    <TextAreaInput id={`${id}-message`} label="Project Details / Special Requirements" name="message" />
+  </div>
+
+  <!-- reCAPTCHA & Submit -->
+  <div class="pt-6 space-y-4">
+    {import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY ? (
+      <div class="g-recaptcha" data-sitekey={import.meta.env.PUBLIC_RECAPTCHA_SITE_KEY} />
+    ) : (
+      <div class="p-4 text-sm text-red-800 rounded-lg bg-red-50 dark:bg-red-900/20 dark:text-red-400" role="alert">
+        <span class="font-medium">Configuration Warning:</span> reCAPTCHA site key is missing.
+      </div>
+    )}
+
+    <div id={`${id}-status`} class="hidden text-sm font-semibold text-center form-status"></div>
+
+    <AuthBtn title={buttonTitle} />
+
+    <p class="text-xs text-center text-neutral-500 dark:text-neutral-400">
+      By submitting this form, you agree to our privacy policy.
+    </p>
+  </div>
+</form>
+
+<script is:inline src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+<script define:vars={{
+    WEB_APP_URL: import.meta.env.PUBLIC_GSCRIPT_APP_URL || "",
+    API_KEY: import.meta.env.PUBLIC_GSCRIPT_API_KEY || "",
+    IS_DEV: import.meta.env.DEV,
+}}>
+  document.querySelectorAll('.shared-contact-form').forEach(form => {
+    if (form.dataset.initialized) return;
+    form.dataset.initialized = "true";
+
+    const id = form.id;
+    const formSource = form.dataset.formSource || "MFolks Geotrix Site";
+    const statusEl = document.getElementById(`${id}-status`);
+    const countrySelect = document.getElementById(`${id}-country`);
+    const countryOtherInput = document.getElementById(`${id}-country-other`);
+
+    if (countrySelect && countryOtherInput) {
+      countrySelect.addEventListener("change", (e) => {
+        if (e.target.value === "OTHER") {
+          countryOtherInput.classList.remove("hidden");
+        } else {
+          countryOtherInput.classList.add("hidden");
+          countryOtherInput.value = "";
+        }
+      });
+    }
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!statusEl) return;
+
+      statusEl.classList.remove("text-green-600", "text-red-600", "text-neutral-500");
+      statusEl.classList.add("text-neutral-500");
+      statusEl.classList.remove("hidden");
+      statusEl.innerText = "";
+
+      if (!WEB_APP_URL || !API_KEY) {
+        statusEl.innerText = "⚠️ Configuration error. Please contact us directly.";
+        statusEl.classList.replace("text-neutral-500", "text-red-600");
+        return;
+      }
+
+      let captchaResponse = "";
+      if (IS_DEV) {
+        captchaResponse = "dev_mode_bypass";
+      } else {
+        if (typeof grecaptcha !== "undefined") {
+          try {
+             const widgetId = form.querySelector('.g-recaptcha')?.dataset?.widgetId;
+             captchaResponse = widgetId !== undefined ? grecaptcha.getResponse(widgetId) : grecaptcha.getResponse();
+          } catch (err) {}
+        }
+        if (!captchaResponse) {
+          statusEl.innerText = "⚠️ Please complete the reCAPTCHA verification.";
+          statusEl.classList.replace("text-neutral-500", "text-red-600");
+          return;
+        }
+      }
+
+      statusEl.innerText = "⏳ Submitting...";
+
+      const formData = new FormData(form);
+      const quantity = formData.get("quantity") || "";
+      let fullMessage = formData.get("message") || "";
+      
+      if (formSource.includes("Calculator")) {
+         fullMessage = "SOLAR CALCULATOR LEAD\n\n" + fullMessage;
+      }
+      if (quantity) fullMessage += `\n\nQuantity: ${quantity}`;
+
+      try {
+        const savedCart = localStorage.getItem("mfolks_cart");
+        if (savedCart) {
+          const cartItems = JSON.parse(savedCart);
+          if (Array.isArray(cartItems) && cartItems.length > 0) {
+             fullMessage += "\n\n--- CART ITEMS ---\n" +
+              cartItems.map(item => `- ${item.productName} (${item.variant?.label || "Default"})\n  Quantity: ${item.quantity}`).join("\n");
+          }
+        }
+      } catch (e) {}
+
+      const contextData = formData.get("context_data");
+      if (contextData) fullMessage += `\n\n--- CONTEXT DATA ---\n${contextData}`;
+
+      const selectedCountry = formData.get("country");
+      const customCountry = formData.get("country_other");
+      const finalCountry = selectedCountry === "OTHER" ? customCountry : selectedCountry;
+      
+      const selectedCountryCode = formData.get("country_code");
+      const customCountryCode = formData.get("country_code_other");
+      const finalCountryCode = selectedCountryCode === "OTHER" ? customCountryCode : selectedCountryCode;
+
+      const payload = {
+          submitted_at: new Date().toISOString(),
+          full_name: formData.get("name"),
+          email: formData.get("hs-email-contacts"),
+          country_code: finalCountryCode || "",
+          phone: formData.get("hs-phone-number"),
+          company_name: formData.get("company"),
+          interested_in: formData.get("product"),
+          company_type: formData.get("company_type") || "",
+          service_product_required: formData.get("product"),
+          country: finalCountry || "",
+          state: formData.get("state") || "",
+          city: formData.get("city") || "",
+          message: fullMessage,
+          source: formSource,
+          recaptcha_token: captchaResponse,
+      };
+
+      try {
+          const response = await fetch(`${WEB_APP_URL}?key=${API_KEY}`, {
+              method: "POST",
+              headers: { "Content-Type": "text/plain;charset=utf-8" },
+              body: JSON.stringify(payload),
+          });
+
+          const resultText = await response.text();
+          let result;
+          try {
+              result = JSON.parse(resultText);
+          } catch (e) {
+              result = { status: "success" };
+          }
+
+          if (result.status === "success" || response.ok) {
+              statusEl.innerText = "✅ Success! We have received your details.";
+              statusEl.classList.replace("text-neutral-500", "text-green-600");
+              form.reset();
+              if (!IS_DEV && typeof grecaptcha !== "undefined") grecaptcha.reset();
+
+              form.dispatchEvent(new CustomEvent('formSuccess'));
+          } else {
+              throw new Error("Submission failed");
+          }
+      } catch (err) {
+          statusEl.innerText = "❌ Error submitting. Please try again.";
+          statusEl.classList.replace("text-neutral-500", "text-red-600");
+      }
+    });
+  });
+</script>
